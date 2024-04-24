@@ -240,5 +240,4 @@ Select
 From 
     employees
 Where
-    Lower(first_name) Like '____'
-    AND Lower(first_name) Like '__a_';
+    Lower(first_name) Like '_a__';
