@@ -241,3 +241,90 @@ From
     employees
 Where
     Lower(first_name) Like '_a__';
+    
+-- 부서 ID가 90인 사원 중, 급여가 20000 이상인 사원 이름, 급여
+Select 
+    first_name as "이름",
+    salary as "급여",
+    department_id as "부서 ID"
+From 
+    employees
+Where 
+    department_id In (90) -- 조건1 : 부서가 90
+AND 
+    salary >= 20000;      -- 조건 2 : 급여가 20000이상
+
+-- 입사일이 11/01/01 ~ 17/12/31 구간에 있는 사원의 목록 이름, 입사일
+Select 
+    first_name as "이름",
+    salary as "급여",
+    hire_date as "입사일"
+From 
+    employees
+Where 
+    hire_date >= '11/01/01'
+AND 
+    hire_date <= '17/12/31';
+
+-- manager_id가 100, 120, 147인 사원의 명단의 이름, manager_id
+-- 1. 비교연산자 + 논리연산자의 조합
+Select 
+    manager_id as "사번",
+    first_name as "이름",
+    salary as "급여"
+From 
+    employees
+Where 
+    manager_id = 100 
+OR  manager_id = 120
+OR  manager_id = 147;
+
+-- 2. IN 연산자 이용
+Select 
+    manager_id as "사번",
+    first_name as "이름",
+    salary as "급여"
+From 
+    employees
+Where 
+    manager_id IN (100, 120, 147);
+
+--------------------------------
+-- ORDER BY
+--------------------------------
+-- 특정 컬럼명, 연산식, 별칭, 컬럼 순서를 기준으로 레코드 정렬
+-- ASC(오름차순 : default), DESC(내림차순)
+-- 여러 개의 칼럼에 적용할 수 있고 ,로 구분
+
+-- 부서 번호를 오름차순으로 정렬하고 부서번호, 급여, 이름을 출력하십시오
+Select 
+    department_id as "부서 번호",
+    salary as "급여",
+    first_name || ' ' || last_name as "이름"
+From 
+    employees
+Order By 
+    department_id Asc;  -- ASC 생략 가능
+
+-- 급여가 10000 이상인 직원의 이름을 급여 내림차순(높은 급여 -> 낮은 급여)으로 출력하십시오
+Select 
+    salary as "급여",
+    first_name || ' ' || last_name as "이름"
+From 
+    employees
+Where 
+    salary >= 10000
+Order By 
+    salary Desc;
+    
+-- 부서 번호, 급여, 이름 순으로 출력하되 부서번호 오름차순, 급여 내림차순으로 출력하십시오.
+Select 
+    department_id as "부서 번호",
+    salary as "급여",
+    first_name || ' ' || last_name as "이름"
+From 
+    employees
+Order By 
+    department_id Asc,
+    salary Desc;
+-- 정렬 기준을 어떻게 세우냐에 따라 성능, 출력 결과 영향을 미칠 수 있다.
