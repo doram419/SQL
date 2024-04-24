@@ -143,4 +143,102 @@ Select
 From 
     employees
 Where
-    salary <= 14000 OR salary >= 17000;
+    salary <= 4000 
+    OR salary >= 17000;
+    
+-- 예제 : 급여가 14000 이상이고, 17000 미만인 사원의 이름과 급여
+Select
+    first_name || ' '|| last_name as "이름",
+    salary as "급여"
+From 
+    employees
+Where
+    salary >= 14000 AND salary < 17000;
+    
+-- BETWEEN : 범위 비교
+Select
+    first_name || ' '|| last_name as "이름",
+    salary as "급여"
+From 
+    employees
+Where
+    salary Between 14000 and 17000;
+
+-- NULL 체크 =, <> 사용하면 안 됨
+-- IS NULL, IS NOT NULL
+
+-- commission을 받지 않는 사람들 (-> commision_pct가 NULL인 레코드)
+Select 
+    first_name, commission_pct
+From
+    employees
+Where
+    commission_pct IS NULL;
+-- NULL 체크
+
+-- commission을 받는 사람들 (-> commission_pct가 Not Null인 레코드)
+Select 
+    first_name, commission_pct
+From
+    employees
+Where
+    commission_pct Is Not Null;
+
+-- IN 연산자 : 특정 집합의 요소와 비교
+-- 사원들 중 10, 20, 40번 부서에서 근무하는 직원들의 이름과 부서 아이디 출력
+Select 
+    first_name, department_id
+From 
+    employees
+Where
+    department_id In (10, 20, 40); 
+
+-- OR로 작성
+Select 
+    first_name, department_id
+From 
+    employees
+Where
+    department_id = 10 OR
+    department_id = 20 OR
+    department_id = 40; 
+    
+--------------------------
+-- Like 연산
+--------------------------
+-- 와일드카드(%,_)를 이용한 부분 문자열 매핑
+-- % : 0개 이상의 정해지지 않은 문자열 매핑
+-- _ : 1개의 정해지지 않은 문자
+
+-- 이름에 am을 포함하고 있는 사원의 이름과 급여 출력
+Select 
+    first_name, salary
+From 
+    employees
+Where
+    Lower(first_name) Like '%am%';
+    
+-- 이름의 두 번째 글자가 a인 사원의 이름과 급여 출력
+Select 
+    first_name, salary
+From 
+    employees
+Where
+    Lower(first_name) Like '_a%';
+    
+-- 이름의 네 번째 글자가 a인 사원의 이름과 급여 출력
+Select 
+    first_name, salary
+From 
+    employees
+Where
+    Lower(first_name) Like '___a%';
+
+-- 이름이 네 글자인 사원들 중에서 두 번째 글자가 a인 사원의 이름과 급여 출력
+Select 
+    first_name, salary
+From 
+    employees
+Where
+    Lower(first_name) Like '____'
+    AND Lower(first_name) Like '__a_';
