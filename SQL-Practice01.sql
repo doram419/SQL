@@ -54,7 +54,9 @@ FROM
 WHERE
     "A1"."MANAGER_ID" IS NOT NULL
     AND "A1"."COMMISSION_PCT" IS NULL
-    AND "A1"."SALARY" > 3000;
+    AND "A1"."SALARY" > 3000
+Order By
+    salary Asc;
     
 -----------------------------------------------------------------------------
 -- 문제 4.
@@ -94,7 +96,6 @@ Where
 AND
     salary >= 10000
 Order By
-    first_name Desc,
     salary Desc,
     commission_pct Desc;
         
@@ -114,7 +115,7 @@ Select
 From 
     employees
 Where 
-    department_id IN (10, 90, 100); 
+    department_id IN (10, 90, 100)
 
 -----------------------------------------------------------------------------
 -- 문제 7.
