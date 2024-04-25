@@ -368,7 +368,7 @@ From
 -- 머신러닝, 딥러닝 할 때 자주 하게 될 것이다
 -- 데이터 사이언스의 80% 작업이 데이터 수집, 정제과정
 
--- 수치형 단일행 함수 1
+-- 수치형 단일행 함수 
 Select 
     3.141592,
     Abs(-3.14),              -- 절댓값
@@ -383,3 +383,90 @@ Select
     Power(2,4)               -- 2의 4 제곱
 From 
     dual;
+
+--------------------------
+-- DATE FORMAT
+--------------------------
+
+-- 현재 세션 정보 확인
+Select PARAMETER ,
+VALUE 
+From nls_session_parameters;
+
+-- 현재 날짜 포맷이 어떻게 되는가?
+-- 딕셔너리를 확인
+Select Value From 
+    nls_session_parameters
+Where parameter = 'NLS_DATE_FORMAT';
+
+-- 현재 날짜 : SYSDATE
+Select sysdate 
+From dual;  -- 가상 테이블 dual로부터 받아오므로 1개의 레코드
+
+Select sysdate 
+From employees; -- employees 테이블로부터 받아오므로 employees 테이블 레코드
+                -- 개수만큼 출력됨
+                
+-- 날짜 관련 단일 행 함수
+Select 
+    sysdate,                             -- 현재 날짜
+    Add_Months(sysdate, 2),              -- 현재 날짜로부터 2개월이 지난 후
+    Last_Day(sysdate),                   -- 현재 달의 마지막 날짜
+    Months_Between('12/09/24',sysdate),  -- 12년 9월 24일부터 지금까지의 개월 차이
+    Next_Day(sysdate, 7),                -- 1:일 ~ 7:토
+    Next_Day(sysdate, '화'),             -- NLS_DATE_LANGUAGE의 설정에 따름
+    Round(sysdate, 'Month'),             -- Month를 기준으로 반올림
+    Trunc(sysdate, 'Month')              -- Month를 기준으로 버림
+From dual;
+
+Select 
+    first_name, hire_date,
+    Round(Months_Between(sysdate, hire_date)) as "근속월수"
+From employees;
+
+--------------------------
+-- 변환함수
+--------------------------
+
+-- TO_NUMBER(s, fmt) : 문자열 -> 숫자
+-- TO_DATE(s, fmt) : 문자열 -> 날짜
+-- TO_CHAR(s, fmt) : 숫자, 날짜 -> 문자
+
+-- TO_CHAR
+Select 
+    first_name,
+    To_Char(hire_date, 'yyyy-MM-DD')
+From employees;
+
+-- 현재 시간을 년-월-일 시:분:초로 표기
+Select 
+    To_Char(sysdate, 'yyyy-MM-DD HH:MI:SS')
+From 
+    dual;
+    
+Select 
+    To_Char(3000000, 'L999,999,999.99')
+From 
+    dual;
+    
+-- 모든 직원의 이름과 연봉 정보 표시
+Select
+    first_name, 
+    To_Char(salary, '$999,999,999') as "월급",
+    To_Char(((salary + salary * nvl(commission_pct, 0)) *12), '$999,999,999.99') 
+        as "연봉"
+from 
+    employees;
+    
+-- 문자 -> 숫자 : TO_NUMBER
+Select 
+    '$57,600',
+    To_Number('$57,600', '$999,999') / 12 as "월급" 
+From dual;
+
+-- 문자열 -> 날짜
+Select '2012-09-24 13:48:00',
+    To_Date('2012-09-24 13:48:00', 'YYYY-MM-DD HH24:MI:SS') as "RR 포맷으로 변환"
+From dual;
+
+
