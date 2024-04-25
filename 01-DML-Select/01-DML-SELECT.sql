@@ -483,6 +483,13 @@ Select
                                 -- 48일 후의 날짜가 나오기 때문
 From Dual;
 
+-- nvl1 function
+SELECT 
+    first_name, 
+    salary, 
+    nvl(salary * commission_pct, 0) as "commission"  -- nvl(표현식, 대체값)
+FROM employees;
+
 -- nvl2 function
 Select 
     first_name,
