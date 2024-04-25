@@ -83,4 +83,21 @@ Order by
 --       단, 커미션 퍼센트가 null이면 0으로 표시
 -- 정렬 : 월급 내림차순으로 정렬
 -- 출력 항목 및 별명 : 직원의 이름(first_name), 월급, 커미션 퍼센트
+Select
+    first_name as "이름",
+    salary as "월급",
+    Nvl(commission_pct, 0) as "커미션 퍼센트"
+From 
+    employees
+Where 
+    salary < 14000 
+AND
+    salary >= 10000
+Order By
+    first_name Desc,
+    salary Desc,
+    commission_pct Desc;
     
+문제6.
+부서번호가 10, 90, 100 인 직원의 이름, 월급, 입사일, 부서번호를 나타내시오
+입사일은 1977-12 와 같이 표시하시오
