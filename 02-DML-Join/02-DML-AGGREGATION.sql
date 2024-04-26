@@ -200,3 +200,36 @@ On emp.manager_id = dept.manager_id
 AND emp.manager_id = dept.manager_id;
 
 -- 그래서 Natual Join을 쓰는 거보다 명시적으로 해주는게 나을 수 있다.
+
+
+-------------------------------
+-- Self Join
+-------------------------------
+
+-- 자기 자신과 Join
+-- 자기 자신을 두 번 호출 -> 별칭을 반드시 부여해야 할 필요가 있는 Join 방법
+Select * 
+From employees emp ;    -- 107
+
+Select 
+     emp.employee_id,
+     emp.first_name,
+     emp.manager_id,
+     man.first_name
+From 
+    employees emp, employees man
+Where 
+    emp.manager_id = man.manager_id;
+    
+-- 해봅시다. Steven (매니저 없는 분)까지 포함해서 출력
+
+Select 
+    emp.employee_id,
+    emp.first_name,
+    emp.manager_id,
+    man.first_name
+From 
+    employees emp 
+    Full Outer Join employees man
+    On emp.manager_id = man.manager_id;
+
