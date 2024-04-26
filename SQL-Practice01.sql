@@ -27,7 +27,6 @@ ORDER BY
 -- 정렬 : 월급의 내림차순으로 정렬하세요.
 -- 출력 항목 및 별명 : 업무, 업무이름, 최고 월급
 SELECT
-    "A1"."JOB_ID"     "업무",
     "A1"."JOB_TITLE"  "업무 이름",
     "A1"."MAX_SALARY" "최고 월급"
 FROM
@@ -115,7 +114,7 @@ Select
 From 
     employees
 Where 
-    department_id IN (10, 90, 100)
+    department_id IN (10, 90, 100);
 
 -----------------------------------------------------------------------------
 -- 문제 7.
@@ -165,6 +164,16 @@ From
     locations
 Order by
     "나라 이름" Asc;
+
+-- 강사님 풀이
+Select 
+    Upper(country_name)
+From 
+    countries
+Order by
+    Upper(country_name) Asc;    
+-- Q. 꼭 Upper를 써야하는가?
+-- A. 이번엔 상관없지만 대소문자를 분류해서 해주는게 좋다
 
 -----------------------------------------------------------------------------
 -- 문제 10.
