@@ -1,6 +1,7 @@
 -------------------------------
 -- Left Outer Join
 -------------------------------
+-- Left 테이블의 모든 레코드가 출력 결과에 참여
 
 Select * From employees Where department_id Is Null;
 -- 왜인지는 모르지만 Department_id가 null, 즉 부서에 소속되지 않은 사람
@@ -28,3 +29,4 @@ From
     employees emp
     Left Outer Join departments dept
         On emp.department_id = dept.department_id;
+    

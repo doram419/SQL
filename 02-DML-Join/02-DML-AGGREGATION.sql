@@ -97,6 +97,7 @@ Where emp.salary <= (j.min_salary + j.max_salary) / 2;
 -------------------------------
 -- Left Outer Join
 -------------------------------
+-- Left 테이블의 모든 레코드가 출력 결과에 참여
 
 Select * From employees Where department_id Is Null;
 -- 왜인지는 모르지만 Department_id가 null, 즉 부서에 소속되지 않은 사람
@@ -124,4 +125,57 @@ From
     employees emp
     Left Outer Join departments dept
         On emp.department_id = dept.department_id;
+
+-------------------------------
+-- Right Outer Join
+-------------------------------
+-- Right 테이블의 모든 레코드가 출력 결과에 참여
+
+-- Oracle SQL
+Select
+    first_name,
+    emp.department_id,
+    dept.department_id,
+    department_name
+From
+    employees emp,
+    departments dept
+Where
+    emp.department_id(+) = dept.department_id;  -- departments 테이블 레코드 전부를 출력에 참여
     
+-- 표준 SQL(ANSI SQL)  
+Select
+    first_name,
+    emp.department_id,
+    dept.department_id,
+    department_name
+From
+    employees emp
+    Right Outer Join departments dept
+        On emp.department_id = dept.department_id;
+        
+-------------------------------
+-- Full Outer Join
+-------------------------------
+-- Join에 참여한 모든 테이블의 모든 레코드를 출력 결과에 참여
+-- 짝이 없는 레코드들은 Null을 포함해서 출력에 참여
+
+-- Oracle X, ANSI SQL만 사용 가능
+Select
+    first_name,
+    emp.department_id,
+    dept.department_id,
+    department_name
+From
+    employees emp
+    Full Outer Join departments dept
+        On emp.department_id = dept.department_id;
+        
+-------------------------------
+-- Natual Join
+-------------------------------
+-- Join할 테이블에 같은 이름의 컬럼이 있을 경우, 해당 컬럼을 기준으로 Join
+Select * 
+From employees emp 
+Natural Join departments dept;
+-- 주의! 정확하지 않을 수 있음
