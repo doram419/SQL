@@ -186,7 +186,9 @@ Order by
 Select
     first_name || ' ' || last_name as "이름",
     salary as "월급",
-    Replace(phone_number, '.', '-') as "전화 번호",
+    Substr(
+        Replace(phone_number, '.', '-'), 3
+    ) as "전화 번호",
     hire_date as "입사일"
 From
     employees
