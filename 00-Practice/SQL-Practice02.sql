@@ -138,7 +138,6 @@ Order By
 -- 출력 항목 : 평균급여는 소수점 첫째짜리에서 반올림 하여 출력 , 최소급여, 최대급여
 -- 정렬 : 평균급여의 내림차순으로 정렬
 
--- A1. 2015년 이후 입사자 중 평균급여 최소급여 최대급여를 알아보려고 한다.
 Select 
     manager_id "매니저id",
     Round(Avg(salary)) "평균 급여",
@@ -168,4 +167,19 @@ Order By
 --       14년은 "14년 입사"
 --       이후 입사자 "상장 이후 입사"
 -- 출력 항목 : optDate
--- 정렬 : 입사 일로 오름차순으로 정렬
+-- 정렬 : 입사일로 오름차순으로 정렬
+
+Select 
+    emp.first_name,
+    emp.hire_date,
+    case When emp.hire_date < '12/12/31' Then '창립 멤버'
+         When emp.hire_date < '14/01/01' Then '13년 입사'
+         When emp.hire_date < '15/01/01' Then '14년 입사'
+         Else '상장 이후 입사'
+    End "입사일"
+From 
+    employees emp
+Order By
+    hire_date Asc;
+
+    
