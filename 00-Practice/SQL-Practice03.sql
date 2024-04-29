@@ -419,6 +419,20 @@ Join regions reg
 -- 출력 항목 : 사번(employee_id), 이름(first_name), 부서명(department_name), 
 --           매니저(manager)의 이름(first_name)
 -- 출력 항목 수 : 106명  
+Select
+    emp.employee_id 사번,
+    emp.first_name 이름,
+    dept.department_name 부서명,
+    man.first_name 매니저이름
+From
+    employees emp 
+    Left Outer Join departments dept
+        On emp.department_id = dept.department_id
+    Join employees man
+        On emp.manager_id = man.employee_id;
+    
+
+-- My Query
 Select 
     emp.employee_id "사번",
     emp.first_name "이름",
