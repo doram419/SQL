@@ -233,3 +233,284 @@ From
     Full Outer Join employees man
     On emp.manager_id = man.manager_id;
 
+-------------------------------
+-- Group Aggregation
+-------------------------------
+
+-- 집계 : 여러 행으로부터 데이터를 수집, 하나의 행으로 반환
+
+-- COUNT : 갯수 세기 함수
+-- employees 테이블의 총 레코드 갯수를 구해보자
+Select 
+    Count(*)    -- 107개
+From 
+    employees;
+-- Count(*)는 모든 행의 수를 반환해줌 
+-- 특정 컬럼 내에 Null 값이 포함되어 있는 지의 여부는 중요하지 않다
+
+-- Commission을 받는 직원의 수를 알고 싶은 경우,
+-- 즉, Commission_pct가 null인 경우를 제외하고 싶다면 *로 세면 안됨
+Select 
+    Count(emp.commission_pct)
+From 
+    employees emp;
+-- 컬럼 내에 포함된 null 데이터를 카운트 하지 않는다
+
+-- 위 커리는 아래 커리와 같다
+Select 
+    Count(*)
+From 
+    employees emp
+where 
+    emp.commission_pct Is Not Null;
+    
+-- Sum : 합계 함수
+-- 모든 사원의 급여의 합계
+Select
+    Sum(emp.salary) "모든 사원의 급여 합계"
+From 
+    employees emp;
+    
+-- Avg :평균 함수
+-- 사원들의 평균 급여?
+Select 
+    Avg(salary)
+From 
+    employees;
+    
+-- 사원들이 받는 평균 커미션 비율은?
+Select
+    Avg(emp.commission_pct) -- 22%
+From
+    employees emp;
+-- 평균 함수(AVG)의 경우, Null값이 포함 되어 있을 경우, 그 값을 집계 수치에서 제외
+-- Null값을 집계 결과에 포함 시킬 것에 대한 여부는 정책으로 결정하고 수행해야 함
+Select
+    Avg(NVL(emp.commission_pct,0))  -- 7%
+From
+    employees emp;
+    
+-- Min / Max : 최솟값 / 최댓값
+-- Avg / Median : 산술평균 / 중앙값
+Select
+    Min(salary) 최소급여,
+    Max(salary) 최대급여,
+    Avg(salary) 평균급여,
+    Median(salary) 급여중앙값
+From
+    employees emp;
+    
+-- 흔히 범하는 오류
+-- 부서별로 평균 급여를 구하고자 할 때
+Select 
+    emp.department_id,
+    Avg(emp.salary)
+From
+    employees emp; -- 여러 개의 레코드
+    
+Select 
+    Avg(emp.salary)
+From
+    employees emp;  -- 단일 레코드
+-- 부서별과 같은 내용이 필요할 때는 GROUP BY 절 사용해야 한다!
+
+Select 
+    department_id, salary
+From 
+    employees
+Order by 
+    department_id Asc;
+
+-- Group By
+Select
+    emp.department_id,
+    Round(Avg(emp.salary), 2)
+From 
+    employees emp
+Group By    
+    emp.department_id   -- 집계를 위해 특정 컬럼을 기준으로 그룹핑
+Order By
+    emp.department_id;
+    
+-- 부서별 평균 급여에 부서명도 포함하여 출력
+Select emp.department_id, dept.department_name, Round(Avg(emp.salary), 2)
+From employees emp
+    Join departments dept
+        On emp.department_id = dept.department_id
+Group By emp.department_id, dept.department_name
+Order By emp.department_id Asc;
+
+-- Group By 절 이후에는 Group By에 참여한 컬럼과 집계 함수만 남는다.
+
+-- 평균 급여가 $ 7,000 이상인 부서만 출력해야 한다.
+Select emp.department_id, Round(Avg(emp.salary),2)
+From employees emp
+Where Avg(emp.salary) >= 7000   -- 아직 집계 함수 시행되지 않은 상태 -> 집계 함수의 비교 불가
+Group By emp.department_id
+Order By emp.department_id;
+
+Select emp.department_id, Round(Avg(emp.salary),2)
+From employees emp
+Where Avg(emp.salary) >= 7000   -- 아직 집계 함수 시행되지 않은 상태 -> 집계 함수의 비교 불가
+Group By emp.department_id
+Order By emp.department_id;
+
+-- 집계 함수 이후 조건 비교 Having절을 이용해야한다.
+Select department_id, Round(Avg(salary),2)
+From employees 
+Group By department_id 
+Having Avg(salary) >= 7000  -- Group By Aggregation의  조건처리
+Order By department_id;
+
+-- RollUp
+-- Group By 절과 함께 사용
+-- 그룹지어진 결과에 대한 좀 더 상세한 요약을 제공하는 기능 수행
+-- 일종의 Item Total
+Select 
+    department_id,
+    job_id,
+    Sum(salary)
+From
+    employees
+Group By RollUp(department_id, job_id)
+Order By department_id Asc;
+
+-- Cube
+-- CrossTab에 대한 Summary를 함께 추출하는 함수
+-- Rollup 함수에 의해 출력되는 Item Total 값과 함께
+-- Column Total 값을 함께 추출
+Select 
+    department_id,
+    job_id,
+    Sum(salary)
+From
+    employees
+Group By Cube(department_id, job_id)
+Order By department_id Asc;
+
+-------------------------------
+-- SUBQUERY
+-------------------------------
+
+-- 모든 직원 급여의 중앙값보다 많은 급여를 받는 사원의 목록
+
+-- 1) 직원 급여의 중앙값?
+-- 2) 1번의 결과보다 많은 급여를 받는 직원의 목록?
+
+-- 1) 직원 급여의 중앙값?
+Select Median(salary)
+From employees;
+
+-- 2) 1번 결과(6200)보다 많은 급여를 받는 직원의 목록
+Select first_name, salary
+From employees
+Where salary >= 6200;
+
+-- 1), 2)쿼리 합치기
+Select first_name, salary
+From employees
+Where 
+    salary >= (Select Median(salary)
+        From employees)
+Order By salary Desc;
+
+-- Susan보다 늦게 입사한 사원의 정보
+-- 1) Susan의 입사일
+-- 2) 1번의 결과보다 늦게 입사한 사원의 정보
+
+-- 1) Susan의 입사일
+Select hire_date
+From employees
+Where first_name = 'Susan';
+
+-- 2) 1번의 결과보다 늦게 입사한 사원의 정보
+Select hire_date, first_name
+From employees
+Where hire_date > '12/06/07'
+Order By hire_date;
+
+-- 두 개 쿼리 합치기
+Select hire_date, first_name
+From employees
+Where hire_date > (Select hire_date
+    From employees
+    Where first_name = 'Susan')
+Order By hire_date;
+
+-- 연습문제
+-- 급여를 모든 직원 급여의 중앙값보다 많이 받으면서 수잔보다 늦게 입사한 직원의 목록
+
+-- 급여를 모든 직원 급여의 중앙값보다 많이 받는 직원!
+-- A1. 모든 직원 급여의 중앙값 (6200)
+Select 
+    median(salary)
+From 
+    employees;
+    
+-- A2. 6200보다 많이 급여를 받는 직원
+Select 
+    first_name, 
+    salary
+From 
+    employees
+Where 
+    salary >= 6200
+Order By
+    salary Asc;
+    
+-- A3. 급여를 모든 직원 급여의 중앙값보다 많이 받는 직원!  
+Select 
+    first_name, 
+    salary
+From 
+    employees
+Where 
+    salary >= (Select median(salary)
+        From employees)
+Order By
+    salary Asc;
+
+-- B1. 수잔의 입사일
+Select 
+    hire_date
+From employees
+Where 
+    first_name = 'Susan';
+    
+-- B2. 12/06/07보다 늦게 입사한 사원
+Select 
+    hire_date,
+    first_name
+From employees
+Where 
+    hire_date > '12/06/07'
+Order By
+    hire_date Asc;
+    
+-- B3. 수잔보다 늦게 입사한 직원
+Select 
+    hire_date,
+    first_name
+From employees
+Where 
+    hire_date > (Select hire_date
+        From employees
+        Where first_name = 'Susan')
+Order By
+    hire_date Asc;
+
+-- AB. 급여를 모든 직원 급여의 중앙값보다 많이 받으면서 수잔보다 늦게 입사한 직원의 목록
+Select 
+    first_name,
+    salary,
+    hire_date
+From employees
+Where 
+    hire_date > (Select hire_date
+        From employees
+        Where first_name = 'Susan') AND
+    salary >= (Select median(salary)
+        From employees)
+Order By
+    hire_date Asc,
+    salary Asc;

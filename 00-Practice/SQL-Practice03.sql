@@ -431,7 +431,6 @@ From
     Join employees man
         On emp.manager_id = man.employee_id;
     
-
 -- My Query
 Select 
     emp.employee_id "사번",
