@@ -335,6 +335,15 @@ Order By
 -- 조건 : 과거의 업무아이디(job_id)가 ‘AC_ACCOUNT’로 근무한 사원을 찾으시오
 -- 출력 항목 : 사번, 이름(풀네임), 업무 아이디, 시작일, 종료일
 -- 출력 항목 수 : 2건
+Select emp.employee_id 사번,
+    emp.first_name || ' ' || last_name 이름,
+    jh.job_id 업무아이디,
+    jh.start_date 시작일,
+    jh.end_date 종료일
+From employees emp
+    Join job_history jh
+        On emp.employee_id = jh.employee_id -- Join 조건
+Where jh.job_id = 'AC_ACCOUNT';
 
 -- My Query
 Select
@@ -364,8 +373,23 @@ Where
 --            매니저(manager)의 이름(first_name), 위치(locations)한 도시(city), 
 --            나라(countries)의 이름(countries_name), 지역구분(regions)의 이름(resion_name)
 -- 출력 항목 수 : 11건    
+Select
+    dept.department_id 부서번호,
+    dept.department_name 부서이름,
+    man.first_name 매니저이름,
+    loc.city 위치한도시,
+    con.country_name 나라,
+    reg.region_name 지역
+From
+    departments dept
+    Join employees man On dept.manager_id = man.employee_id
+    Join locations loc On dept.location_id = loc.location_id
+    Join countries con On loc.country_id = con.country_id
+    Join regions reg On con.region_id = reg.region_id
+Order By dept.department_id Asc;
 
-select
+-- My Query
+Select
     dept.department_id "부서번호",
     dept.department_name "부서이름",
     mgr.first_name "매니저 이름",
