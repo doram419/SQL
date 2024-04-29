@@ -9,6 +9,26 @@
 -- 출력 항목 : 사번(employee_id), 이름(firt_name), 성(last_name), 부서명(department_name)
 -- 정렬 : 부서이름(department_name) 오름차순, 사번(employee_id) 내림차순
 -- 출력 항목 수 : 106건
+-- Simple Join
+Select
+    emp.employee_id, emp.first_name, emp.last_name,
+    dept.department_name
+From
+    employees emp, departments dept
+Where emp.department_id = dept.department_id    -- Join 조건
+Order By dept.department_name Asc, emp.employee_id Desc;
+
+-- ANSI
+-- Join의 의도를 명확하게 하고, 조인 조건과 Selection 조건을 분리하는 효과
+Select
+    emp.employee_id, emp.first_name, emp.last_name,
+    dept.department_name
+From employees emp  -- 중심 테이블
+    Join departments dept
+        On emp.department_id = dept.department_id   -- 조인 조건
+Order By dept.department_name Asc, emp.employee_id Desc;
+
+-- My Code
 Select
     emp.employee_id "사번",
     emp.first_name "이름",
@@ -22,6 +42,7 @@ Join
 Order By
     dept.department_name Asc,
     emp.employee_id Desc;
+
     
 -----------------------------------------------------------------------------
 -- 문제 2.
@@ -37,6 +58,31 @@ Order By
 --           부서명(department_name), 현재업무(job_title)
 -- 정렬 : 사번(employee_id) 오름차순
 -- 출력 항목 수 : 106건
+-- Simple Join
+Select emp.employee_id 사번,
+    emp.first_name 이름,
+    emp.salary 급여,
+    dept.department_name 부서명,
+    j.job_title 현재업무
+From employees emp, departments dept, jobs j
+Where emp.department_id = dept.department_id And
+    emp.job_id = j.job_id
+Order By emp.employee_id ASC;
+
+--ANSI Join
+Select emp.employee_id 사번,
+    emp.first_name 이름,
+    emp.salary 급여,
+    dept.department_name 부서명,
+    j.job_title 현재업무
+From employees emp  -- 중심 테이블
+    Join departments dept
+        On emp.department_id = dept.department_id -- emp 테이블과 dept 테이블 Join 조건
+    Join jobs j
+        On emp.job_id = j.job_id
+Order By emp.employee_id ASC;
+
+-- My Code
 Select
     emp.employee_id "사번",
     emp.first_name "이름",
@@ -46,6 +92,28 @@ Select
 From
     employees emp
 Join 
+    departments dept
+    On emp.department_id = dept.department_id
+Join 
+    Jobs j
+    On emp.job_id = j.job_id
+Order By
+    emp.employee_id Asc;
+    
+-----------------------------------------------------------------------------
+-- 문제 2-1.
+-----------------------------------------------------------------------------
+-- 요구사항 : 문제2에서 부서가 없는 Kimberely(사번 178)까지 표시해 보세요
+-- MyCode
+Select
+    emp.employee_id "사번",
+    emp.first_name "이름",
+    emp.salary "급여",
+    dept.department_name "부서명",
+    j.job_title "현재 업무"
+From
+    employees emp
+Left Outer Join 
     departments dept
     On emp.department_id = dept.department_id
 Join 
