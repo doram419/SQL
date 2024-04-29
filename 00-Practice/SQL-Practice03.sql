@@ -104,6 +104,33 @@ Order By
 -- 문제 2-1.
 -----------------------------------------------------------------------------
 -- 요구사항 : 문제2에서 부서가 없는 Kimberely(사번 178)까지 표시해 보세요
+-- Select * From employees Where department_id Is Null;
+-- Oracle Query
+Select
+    emp.employee_id 사번,
+    emp.first_name 이름,
+    emp.salary 급여,
+    dept.department_name 부서명,
+    j.job_title 현재업무
+From employees emp, departments dept, jobs j
+Where 
+    emp.department_id = dept.department_id (+) AND  -- NULL이 포함된 테이블 쪽에(+)
+    emp.job_id = j.job_id
+Order By emp.employee_id Asc;
+
+--ANSI Query
+Select emp.employee_id 사번,
+    emp.first_name 이름,
+    emp.salary 급여,
+    dept.department_name 부서명,
+    j.job_title 현재업무
+From employees emp  -- 중심 테이블
+    Left Outer Join  departments dept
+        On emp.department_id = dept.department_id -- emp 테이블과 dept 테이블 Join 조건
+    Join jobs j
+        On emp.job_id = j.job_id
+Order By emp.employee_id ASC;
+
 -- MyCode
 Select
     emp.employee_id "사번",
@@ -134,7 +161,17 @@ Order By
 -- 출력 항목 : 도시 아이디, 도시명, 부서명, 부서아이디
 -- 정렬 : 도시아이디(오름차순)
 -- 출력 항목 수 : 27건
+Select
+    loc.location_id 도시아이디,
+    loc.city 도시명,
+    dept.department_name 부서명,
+    dept.department_id 부서아이디
+From locations loc
+    Join departments dept
+        On loc.location_id = dept.location_id
+Order By loc.location_id Asc;
 
+--My Query
 Select
     loc.location_id "도시 id",
     loc.city "도시명",
@@ -151,6 +188,17 @@ Order By
 -- 문제 3-1.
 -----------------------------------------------------------------------------
 -- 요구사항 : 문제 3에서 부서가 없는 도시도 포함합니다.
+Select
+    loc.location_id 도시아이디,
+    loc.city 도시명,
+    dept.department_name 부서명,
+    dept.department_id 부서아이디
+From locations loc
+    Join departments dept
+        On loc.location_id = dept.location_id
+Order By loc.location_id Asc;
+
+-- My Query
 Select
     loc.location_id "도시 id",
     loc.city "도시명",
@@ -174,6 +222,16 @@ Order By
 -- 정렬 : 지역 이름(오름차순), 나라 이름(내림차순)
 -- 출력 항목 수 : 25건
 Select
+    reg.region_name 지역이름,
+    con.country_name 나라이름
+From regions reg    -- 중심 테이블
+    Join countries con
+        On reg.region_id = con.region_id
+Order By reg.region_name Asc,
+    con.country_name Desc;
+
+-- My Query
+Select
     reg.region_name "지역 이름",
     cou.country_name "나라 이름"
 From
@@ -196,6 +254,18 @@ Order By
 -- 출력 항목 : 사번(employee_id), 이름(first_name)과 채용일(hire_date), 
 --           매니저이름(first_name), 매니저 입사일(hire_date)
 -- 출력 항목 수 : 37건
+-- Self Join
+Select emp.employee_id 사번,
+    emp.first_name 이름,
+    emp.hemp.hire_date 채용일,
+    man.first_name 매니저이름,
+    man.hire_date 매니저입사일
+From employees emp
+    Join employees man
+        On emp.manager_id = man.employee_id -- Join 조건
+Where emp.hire_date < man.hire_date;        -- Selection 조건
+
+-- My Query
 Select
     emp.employee_id "사번",
     emp.first_name "이름",
@@ -222,6 +292,21 @@ Where
 -- 출력 항목 : 나라명, 나라아이디, 도시명, 도시아이디, 부서명, 부서아이디
 -- 출력 항목 수 : 27건
 -- 정렬 : 나라명(오름차순)
+Select
+    con.country_name 나라명,
+    con.country_id 나라아이디,
+    loc.city 도시명,
+    loc.location_id 도시아이디,
+    dept.department_name 부서명,
+    dept.department_id 부서아이디
+From countries con
+    Join locations loc
+        On con.country_id = loc.country_id
+    Join departments dept
+        On loc.location_id = dept.location_id
+Order By con.country_name Asc;
+
+-- My Query
 Select 
     cou.country_name "나라명",
     cou.country_id "나라 id",
@@ -251,6 +336,7 @@ Order By
 -- 출력 항목 : 사번, 이름(풀네임), 업무 아이디, 시작일, 종료일
 -- 출력 항목 수 : 2건
 
+-- My Query
 Select
     emp.employee_id "사번",
     emp.first_name || ' ' || emp.last_name "이름(풀네임)",
