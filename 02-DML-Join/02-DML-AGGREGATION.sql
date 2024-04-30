@@ -519,7 +519,7 @@ Order By
 -- 서브 쿼리 결과가 둘 이상의 레코드일 때 단일행 비교연산자는 사용할 수 없다.
 -- 집합 연산에 관련된 In, Any, All, Exists 등을 사용해야 한다.
 
--- 예제) 직원들 중,
+-- In 예제) 직원들 중,
 -- 110번 부서 사람들이 받는 급여와 같은 급여를 받는 직원들의 목록
 -- 서브 쿼리부터 알아보자!
 -- A1. 110번 부서의 사람들은 얼마나 받는가? (12008, 8300)
@@ -544,6 +544,236 @@ Where salary In (Select salary
     From employees
     Where department_id = 110);
     
+-- ALL 예제) 직원들 중,
+-- 110번 부서의 모든 사람들이 받는 급여들보다 많은 급여를 받는 직원들의 목록
+-- B1. 110번 부서 사람들은 얼마나 급여를 받는가? (12008, 8300)
+Select 
+    salary
+From employees
+Where department_id = 110;
 
+-- B2. B1 쿼리 전체보다 많은 급여를 받는 직원들의 목록 
+Select 
+    first_name,
+    salary
+From 
+    employees
+Where 
+    salary > ALL(12008, 8300);
 
+-- B3. 110번 부서 사람들이 받는 급여보다 많은 급여를 받는 직원들의 목록
+Select 
+    first_name,
+    salary
+From 
+    employees
+Where 
+    salary > ALL(Select salary
+        From employees
+        Where department_id = 110)
+Order By salary Desc;
+-- ㄴ salary > 12008
+
+-- ANY 예제) 직원들 중,
+-- 110번 부서 사람들이 받는 급여들 중, 한 명이라도 많은 급여를 받는 직원들의 목록
+-- C1. 110번 부서 사람들은 얼마나 급여를 받는가? (12008, 8300)
+Select 
+    salary
+From employees
+Where department_id = 110;
+
+-- C2. C1 쿼리 중 하나보다 많은 급여를 받는 사람들의 목록
+Select 
+    first_name,
+    salary
+From 
+    employees
+Where 
+    salary > ANY(12008, 8300);
+    
+-- C3. 110번 부서 사람들중 하나보다 많은 급여를 받는 직원들의 목록
+Select 
+    first_name,
+    salary
+From 
+    employees
+Where 
+    salary > ANY(Select salary
+        From employees
+        Where department_id = 110)
+Order By salary Desc;
+-- salary > 12008 Or salary > 8300
+-- ㄴsalary >= 8300
+
+-- Correlated Query : 연관 쿼리
+-- 바깥쪽 쿼리(Outer Query)와 안쪽 쿼리(Inner Query)가 서로 연관된 쿼리
+Select 
+    first_name,
+    salary,
+    department_id
+From 
+    employees outer
+Where
+    salary > (Select Avg(salary)
+              From employees 
+              Where department_id = outer.department_id);
+-- 외부 쿼리 : 급여를 특정 값보다 많이 받는 직원의 이름, 급여, 부서 아이디
+
+-- 내부 쿼리 : 특정 부서에 소속된 직원의 평균 급여
+
+-- 자신이 속한 부서의 평균 급여보다 많이 받는 직원의 목록을 구하라는 의미
+-- 외부 쿼리가 내부 쿼리에 영향을 미치고
+-- 내부 쿼리 결과가 다시 외부 쿼리에 영향을 미침
+
+-- 서브쿼리 연습
+-- A) 조건절을 이용한 방법
+-- 각 부서별로 최고 급여를 받는 사원의 목록 (조건절에서 서브쿼리 활용)
+-- A1. 각 부서의 최고 급여를 출력하는 쿼리
+Select 
+    department_id, 
+    Max(salary)
+From employees
+Group By department_id;
+
+-- A2. 1번 쿼리에서 나온 department_id, max(salary)값을 이용하여 외부 쿼리를 작성 
+Select
+    department_id,
+    employee_id,
+    first_name,
+    salary
+From employees
+Where 
+    (department_id, salary) In (Select department_id, 
+                                       Max(salary)
+                                From employees
+                                Group By department_id)
+Order By department_id;
+
+-- B) 서브쿼리를 이용하여, 임시 테이블을 생성하고 테이블 조인 결과 뽑기
+-- 각 부서별로 최고 급여를 받는 사원의 목록 (조건절에서 서브쿼리 활용)
+-- B1) 각 부서의 최고 급여를 출력하는 쿼리
+Select 
+    department_id, 
+    Max(salary)
+From employees
+Group By department_id;
+
+-- B2) B1 쿼리에서 생성한 임시 테이블과 외부 쿼리를 Join하는 쿼리
+Select emp.department_id,
+    emp.employee_id,
+    emp.first_name,
+    emp.salary
+From employees emp,
+    (Select department_id, 
+            Max(salary) salary
+     From employees
+     Group By department_id) sal
+Where 
+     emp.department_id = sal.department_id  --Join 조건
+     AND emp.salary = sal.salary
+Order By
+    emp.department_id Asc;
+-- Simple Join
+
+-- Top-K Query
+-- 질의의 결과로 부여된 가상 컬럼 rownum값을 사용해서 쿼리 순서 반환
+-- rownum 값을 활용, 상위 K개의 값을 얻어오는 쿼리
+
+-- 2017년 입사자 중에서 연봉 순위 5위까지 출력
+
+-- 1. 2017년 입사자가 누구?
+Select * From employees
+Where hire_date Like '17%'
+Order By salary Desc;
+
+-- 2. 1번 쿼리를 활용, rownum 값까지 확인, rownum <= 5이하인 레코드 -> 상위 5개의 레코드
+Select rownum,
+    first_name,
+    salary
+From (Select * From employees
+      Where hire_date Like '17%'
+      Order By salary Desc)
+Where 
+    rownum <= 5;
+
+-- 집합 연산
+-- 쿼리 1) 15/01/01 이전 입사자 (24행)
+Select 
+    first_name,
+    salary,
+    hire_date
+From employees
+Where hire_date < '15/01/01'; 
+
+ -- 쿼리 2) 12000초과 급여를 받는 직원 목록 (8행)
+Select 
+    first_name,
+    salary,
+    hire_date
+From employees
+Where salary > 12000;  
+
+-- 합집합 (26행)
+Select 
+    first_name,
+    salary,
+    hire_date
+From employees
+Where hire_date < '15/01/01'
+Union -- 중복 레코드 한 개로 취급
+Select 
+    first_name,
+    salary,
+    hire_date
+From employees
+Where salary > 12000
+Order By hire_date Asc;
+
+-- 합집합(중복 포함) (32행)
+Select 
+    first_name,
+    salary,
+    hire_date
+From employees
+Where hire_date < '15/01/01'
+Union All -- 중복 레코드는 별개로 취급
+Select 
+    first_name,
+    salary,
+    hire_date
+From employees
+Where salary > 12000
+Order By hire_date Asc;
+
+-- 교집합 -> Inner Join과 동일한 결과 (6행)
+Select 
+    first_name,
+    salary,
+    hire_date
+From employees
+Where hire_date < '15/01/01'
+Intersect 
+Select 
+    first_name,
+    salary,
+    hire_date
+From employees
+Where salary > 12000
+Order By hire_date Asc;
+
+-- 차집합 (18행)
+Select 
+    first_name,
+    salary,
+    hire_date
+From employees
+Where hire_date < '15/01/01'
+Minus 
+Select 
+    first_name,
+    salary,
+    hire_date
+From employees
+Where salary > 12000
+Order By hire_date Asc;
 
