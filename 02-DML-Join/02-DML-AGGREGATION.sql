@@ -777,3 +777,19 @@ From employees
 Where salary > 12000
 Order By hire_date Asc;
 
+-- RANK 관련 함수 (Oracle 특화 함수)
+Select salary, first_name,
+    Rank() Over(Order By salary Desc) as rank, -- 일반적인 순위
+    Dense_Rank() Over(Order By salary Desc) as dense_link,
+    Row_Number() Over(Order By salary Desc) as row_number, -- 정렬 했을 때 실제 행 번호
+    rownum  -- 쿼리 결과의 행번호 (가상 컬럼)
+From employees;
+
+-- Hierarchical Query (Oracle 특화)
+-- 트리 형태 구조 표현
+-- Level 가상 컬럼 활용 쿼리
+Select level, first_name, manager_id
+From employees
+Start With manager_id Is Null               -- 트리 형태의 Root가 되는 조건 명시
+Connect By Prior employee_id = manager_id   -- 상위 레벨과 하위 레벨의 연결조건(가지 치기 조건)
+Order By level;                             -- 트리의 깊이를 나타내는 Oracle의 가상 Column
