@@ -10,7 +10,8 @@
 Select Count(*)
 From employees 
 Where salary < (Select Avg(salary) From employees);
-                
+
+
 -- A. Subquery가 아닌 다른 방법으로 풀 수 있는가?
 -- 잘 모르겠다
 

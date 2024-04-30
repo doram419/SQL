@@ -5,6 +5,11 @@
 
 -- 조건 : 매니저가 Null이 아닌 직원의 수를 세서 출력하세요
 -- 출력 항목 : 직원의 수를 집계하여 haveMngCount로 출력하시오.
+SELECT COUNT(manager_id) "haveMngCnt"
+FROM employees
+WHERE manager_id IS NOT NULL;
+
+-- My Code
 Select
     Count(*) "haveMngCnt"
 From
@@ -22,6 +27,11 @@ Where
 -- 조건 : 임금 중 최고와 최저를 찾아서 출력하고 그 차도 출력하시오.
 -- 출력 항목 및 별명 : 임금 중 최고를 찾아 "최고임금"으로, 최저 임금을 찾아 "최저임금"으로, 
 --                  그리고 그 둘의 차를 "최고임금 - 최저임금"으로 출력하시오
+SELECT MAX(salary) 최고임금, MIN(salary) 최저임금,
+    MAX(salary) - MIN(salary) "최고임금 - 최저임금"
+FROM employees;
+
+-- My Code
 Select
     Max(salary)                      "최고임금",
     Min(salary)                      "최저임금",
@@ -37,18 +47,38 @@ From
 
 -- 조건 : hire_date 중에서 가장 최근을 찾아서 정해진 형식으로 출력하시오
 -- 출력 항목 및 별명 : hire_date를 "입사일"로, 형식은 (2014년 07월 10일)로 출력하시오
+SELECT TO_CHAR(
+        MAX(hire_date), 'YYYY"년"MM"월"DD"일"'
+        )
+FROM employees;
+
+-- My Code
 Select
     To_Char(
         Max(hire_date), 'YYYY"년" MM"월" DD"일"'
     ) "입사일"
 FRom
     employees;
+
+-----------------------------------------------------------------------------
+-- 문제 4.
+-----------------------------------------------------------------------------
+-- 부서별로 평균임금, 최고임금, 최저임금을 부서아이디(department_id)와 함께 출력합니다.
+-- 정렬순서는 부서번호(department_id) 내림차순입니다.
+SELECT 
+    ROUND(AVG(salary)) 평균임금,
+    MAX(salary) 최고임금,
+    MIN(salary) 최고임금,  
+    department_id 부서번호
+From employees
+GROUP BY department_id
+ORDER BY department_id DESC;
     
 -----------------------------------------------------------------------------
 -- 문제 5.
 -----------------------------------------------------------------------------
--- 업무(job_id)별로 평균 임금, 최고 임금, 최저 임금을 업무아이디(job_id)와 함께 출력하고 정렬
--- 순서는 최저임금 내림차순, 평균임금(소수점 반올림), 오름차순 순입니다.
+-- 업무(job_id)별로 평균 임금, 최고 임금, 최저 임금을 업무아이디(job_id)와 함께 출력하고 
+-- 정렬 순서는 최저임금 내림차순, 평균임금(소수점 반올림), 오름차순 순입니다.
 -- (정렬 순서는 최소임금 2500 구간일때 확인해볼 것)
 
 -- 조건 : 업무(job_id)별로 정보를 출력하시오.
@@ -99,10 +129,8 @@ Select
     Round(Avg(salary) - Min(salary)) "(평균입금 - 최저 임금)"
 From 
     employees emp
-Group By
-    department_id
-    Having
-        Avg(salary) - Min(salary) < 2000
+    Group By department_id
+        Having Avg(salary) - Min(salary) < 2000
 Order By
     Avg(salary) - Min(salary) Desc;
 
@@ -124,7 +152,7 @@ From
 Group By
     job_id
 Order By
-    Max(salary) - Min(salary) Desc;
+   "최고 임금과 최저 임금의 차이" Desc;
     
 -----------------------------------------------------------------------------
 -- 문제 9.
@@ -147,8 +175,8 @@ From
     employees 
 Where 
     hire_date >= '15/01/01'
-Group by 
-    manager_id having Avg(salary) >= 5000
+    Group by manager_id 
+        Having Avg(salary) >= 5000
 Order By
     Avg(salary) Desc;
 
@@ -172,7 +200,7 @@ Order By
 Select 
     emp.first_name,
     emp.hire_date,
-    case When emp.hire_date < '12/12/31' Then '창립 멤버'
+    Case When emp.hire_date < '12/12/31' Then '창립 멤버'
          When emp.hire_date < '14/01/01' Then '13년 입사'
          When emp.hire_date < '15/01/01' Then '14년 입사'
          Else '상장 이후 입사'
