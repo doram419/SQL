@@ -8,7 +8,7 @@
 -- (56건)
 
 Select Count(*)
-From employees
+From employees 
 Where salary < (Select Avg(salary) From employees);
                 
 -- A. Subquery가 아닌 다른 방법으로 풀 수 있는가?
@@ -26,48 +26,22 @@ Where salary < (Select Avg(salary) From employees);
 -- 출력 : 직원번호(employee_id), 이름(first_name), 급여(salary), 평균급여, 최대급여
 -- 정렬 : 급여의 오름차순으로 정렬
 -- 건수 : 51건
------------------------------------------------------------------------------
--- B1. 평균 급여 이상의 월급을 받는 사원 찾기
-Select *
-From employees
-Where salary > Avg(salary);
--- 이 구문은 Where 이후에 Avg를 쓸 수 있어서 발생하는 문제
-
--- B1-1. 평균 급여 구하기
-Select Avg(salary)
-From employees;
--- ∴ 약 6461
-
--- B1-2. 평균 급여 이상의 월급을 받는 사원 찾기
-Select *
-From employees
-Where salary >= (Select Avg(salary)
-                From employees)
-Order By salary Desc;
--- ∴ 51명
-
--- B2. 최대 급여(24000) 이하 월급 받는 사원 찾기
-Select *
-From employees
-Where salary <= (Select Max(salary)
-                From employees)
-Order By salary Desc;
--- ∴ 107명
 --------------------------------------------------------------------------------
--- Answer B3. 직원번호(employee_id), 이름(first_name), 급여(salary), 평균급여, 최대급여를 
+-- Answer. 직원번호(employee_id), 이름(first_name), 급여(salary), 평균급여, 최대급여를 
 --     급여의 오름차순으로 정렬 하여 출력하기
 Select employee_id 직원번호,
        first_name 이름,
        salary 급여,
-       (Select Round(Avg(salary)) from employees) 평균급여,
-       (Select Max(salary) from employees) 최대급여
+       Round(Avg(salary) Over()) 평균급여,
+       Max(salary) Over() 최대급여
 From employees
 Where 
     salary >= (Select Avg(salary) From employees) 
     And salary <= (Select Max(salary) From employees)
 Order By salary Asc;
--- ∴ 51명
+
 -- B4. Subquery가 아닌 다른 방법으로 풀 수 있는가?
+-- 일부는 이렇게 풀어야할지도..?
 --------------------------------------------------------------------------------
 -- 문제 3.
 --------------------------------------------------------------------------------
@@ -80,42 +54,6 @@ Order By salary Asc;
 -- 출력 : 도시아이디(location_id), 거리명(street_address), 우편번호(postal_code), 도시명(city), 
 --       주(state_province), 나라아이디(country_id)
 -----------------------------------------------------------------------------
--- C1. 이름(first_name)이 'Steven'인 사람 찾기
-Select first_name
-From employees
-Where lower(first_name) = 'steven';
--- ∴ 2명
-
--- C2. 성(last_name)이 'king'
-Select last_name
-From employees
-Where lower(last_name) = 'king';
--- ∴ 2명
-
--- C2-1. 풀 네임이 'Steven king'인 사람 찾기
-Select 
-    first_name,
-    last_name
-From employees
-Where 
-    lower(first_name) = 'steven' And
-    lower(last_name) = 'king';
--- ∴ 1명   
-
--- C2-2. 풀 네임이 'Steven king'인 사람을 employees에서 찾고
---       departments 테이블을 합쳐 location_id 출력하기
-Select
-    dept.department_id
-From departments dept
-Where department_id = (Select department_id
-                              From employees
-                       Where lower(first_name) = 'steven' And
-                             lower(last_name) = 'king');
--- Steven King의 이름은 출력 불가능?
---------------------------------------------------------------------------------
--- Answer C3. 직원중 Steven(first_name) king(last_name)이 소속된 부서(departments)를 찾아
---         도시아이디(location_id), 거리명(street_address), 우편번호(postal_code),
---         도시명(city), 주(state_province), 나라아이디(country_id) 를 출력하기
 Select 
     location_id 도시아이디,
     street_address 거리명,
@@ -142,26 +80,6 @@ Where
 -- 출력 : 사번, 이름, 급여
 -- 정렬 : 급여의 내림차순
 --------------------------------------------------------------------------------
--- D1. Job_id가 'ST_MAN'인 직원의 급여 찾기
-Select     job_id,
-    min_salary,
-    max_salary
-From jobs
-Where job_id = 'ST_MAN';
--- jobs에는 salary가 없다!
-
--- D1-1. Job_id가 'ST_MAN'인 직원의 급여 찾기 위해 employees Join하기
-Select 
-    j.job_id,
-    emp.salary
-From jobs j
-    Join employees emp
-        On j.job_id = emp.job_id
-Where j.job_id = 'ST_MAN';
--- ∴ 5800, 6500, 7900, 8000, 8200
---------------------------------------------------------------------------------
--- Answer D2. Job_id가 'ST_MAN'인 직원보다 급여가 낮은 직원 찾아 사번, 이름, 급여 출력하고
---     급여의 내림차순하기
 Select 
     employee_id,
     first_name,
@@ -189,34 +107,7 @@ Order By
 -- 출력 : 직원번호(employee_id), 이름(first_name), 급여(salary) 부서번호(department_id)
 -- 정렬 : 급여의 내림차순으로 정렬
 -------------------------------------------------------------------------------- 
--- E1. 최고 급여 사원 찾기
-Select 
-    Max(salary)
-From 
-    employees;
-
--- E2. 각 부서별로 묶기
-Select department_id
-From employees
-Group By 
-    department_id
-Order By 
-    department_id Desc;
-    
--- E3. 각 부서별 최고 급여 
-Select 
-    department_id,
-    Max(salary)
-From employees
-Group By 
-    department_id
-Order By 
-    Max(salary) Desc;
---------------------------------------------------------------------------------    
--- Answer E4-A. 각 부서별로 최고의 급여를 받는 사원의 직원번호(employee_id), 이름(first_name)과 
---            급여(salary) 부서번호(department_id)를 조회하세요
---            단, 조회결과는 급여의 내림차순으로 정렬되어 나타나야 합니다. 
---            (조건절)
+-- (조건절)
 Select
     emp.employee_id, 
     emp.first_name,
@@ -231,8 +122,8 @@ Where
     emp.salary >= maxSalary
 Order By
     emp.salary desc;
+    
 -- 좀 야매같은데
-   
 --------------------------------------------------------------------------------
 -- 문제 5.2 테이블 조인
 -- 요구사항 : 각 부서별로 최고의 급여를 받는 사원 찾기
