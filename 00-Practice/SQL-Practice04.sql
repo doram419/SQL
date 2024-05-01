@@ -99,6 +99,7 @@ Where
                   last_name = 'King'
             )
     );
+    
 -- Join 이용
 SELECT location_id,
     street_address,
