@@ -1,0 +1,29 @@
+SELECT 
+    1 AS c1,
+    -2 AS c2,
+    3.4 AS c3,
+    -5.6 AS c4,
+    1.2E2 AS c5,
+    -3.4E-2 AS c6
+FROM DUAL;
+
+CL COL;
+
+COL c1 FOR 9.99
+COL c2 FOR 0999.99
+COL c3 FOR 999.99
+COL c4 FOR 990.990
+COL c5 FOR 9,990.990
+
+SELECT 
+    123.456 AS c1,
+    123.456 AS c2,
+    0.456 AS c3,
+    0.456 AS c4,
+    1200 AS c5
+    FROM DUAL;
+
+SELECT 
+    'ABC' AS c1,
+    'ABCDEF' AS c2
+FROM DUAL;
