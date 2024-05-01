@@ -6,7 +6,11 @@
 -----------------------------------------------------------------------------
 -- 평균 급여보다 적은 급여을 받는 직원은 몇 명인지 구하시요.
 -- (56건)
+SELECT COUNT(*)
+FROM employees
+WHERE salary < (SELECT AVG(salary) FROM employees); 
 
+-- My Code
 Select Count(*)
 From employees 
 Where salary < (Select Avg(salary) From employees);
@@ -30,6 +34,26 @@ Where salary < (Select Avg(salary) From employees);
 --------------------------------------------------------------------------------
 -- Answer. 직원번호(employee_id), 이름(first_name), 급여(salary), 평균급여, 최대급여를 
 --     급여의 오름차순으로 정렬 하여 출력하기
+SELECT 
+    emp.employee_id,
+    emp.first_name,
+    emp.salary,
+    t.avgSalary,
+    t.maxSalary
+From 
+    employees emp
+    Join (
+        SELECT 
+            ROUND(
+                AVG(salary) 
+            ) avgSalary,
+            MAX(salary) maxSalary
+        FROM employees
+    ) t
+        On emp.salary BETWEEN t.avgSalary AND t.maxSalary
+ORDER BY emp.salary;
+
+-- My Code
 Select employee_id 직원번호,
        first_name 이름,
        salary 급여,
@@ -40,6 +64,7 @@ Where
     salary >= (Select Avg(salary) From employees) 
     And salary <= (Select Max(salary) From employees)
 Order By salary Asc;
+-- 비교 & 논리 연산자 말고도 BETWEEN도 가능
 
 -- B4. Subquery가 아닌 다른 방법으로 풀 수 있는가?
 -- 일부는 이렇게 풀어야할지도..?
@@ -55,6 +80,39 @@ Order By salary Asc;
 -- 출력 : 도시아이디(location_id), 거리명(street_address), 우편번호(postal_code), 도시명(city), 
 --       주(state_province), 나라아이디(country_id)
 -----------------------------------------------------------------------------
+SELECT location_id,
+    street_address,
+    postal_code,
+    city,
+    state_province,
+    country_id
+FROM
+    locations
+Where
+    location_id = (
+        SELECT location_id 
+        FROM departments
+        WHERE department_id = (
+            SELECT department_id 
+            FROM employees 
+            WHERE first_name = 'Steven' AND 
+                  last_name = 'King'
+            )
+    );
+-- Join 이용
+SELECT location_id,
+    street_address,
+    postal_code,
+    city,
+    state_province,
+    country_id
+FROM
+    locations
+    Natural Join departments -- location_id로 Join
+           Join employees On employees.department_id = departments.department_id
+WHERE first_name = 'Steven' AND last_name = 'King';
+
+-- My Code
 Select 
     location_id 도시아이디,
     street_address 거리명,
@@ -64,13 +122,33 @@ Select
     country_id 나라아이디
 From locations
 Where 
-    location_id = (Select dept.location_id From departments dept
-                   Where department_id = (Select department_id From employees
-                                          Where lower(first_name) = 'steven' And
-                                                lower(last_name) = 'king')
+    location_id = (
+        Select dept.location_id 
+        From departments dept
+        Where department_id = (
+            Select department_id 
+            From employees
+            Where lower(first_name) = 'steven' And
+                  lower(last_name) = 'king'
+            )
     );
 -- C4. Subquery가 아닌 다른 방법으로 풀 수 있는가?
-
+-- Join으로 풀어봐봐
+SELECT loc.location_id,
+    loc.street_address,
+    loc.postal_code,
+    loc.city,
+    loc.state_province,
+    loc.country_id
+FROM
+    locations loc
+    Join departments dept
+        On loc.location_id = dept.location_id
+    Join employees emp
+        On dept.department_id = emp.department_id
+WHERE
+    emp.first_name = 'Steven' AND emp.last_name = 'King';
+            
 --------------------------------------------------------------------------------
 -- 문제 4.
 --------------------------------------------------------------------------------
