@@ -42,7 +42,7 @@ SELECT
     t.maxSalary
 From 
     employees emp
-    Join (
+    JOIN (
         SELECT 
             ROUND(
                 AVG(salary) 
@@ -108,8 +108,8 @@ SELECT location_id,
     country_id
 FROM
     locations
-    Natural Join departments -- location_id로 Join
-           Join employees On employees.department_id = departments.department_id
+    Natural JOIN departments -- location_id로 Join
+           JOIN employees On employees.department_id = departments.department_id
 WHERE first_name = 'Steven' AND last_name = 'King';
 
 -- My Code
@@ -159,16 +159,33 @@ WHERE
 -- 출력 : 사번, 이름, 급여
 -- 정렬 : 급여의 내림차순
 --------------------------------------------------------------------------------
+SELECT employee_id,
+    first_name,
+    salary
+FROM
+    employees
+Where 
+    salary < ANY(
+        SELECT salary 
+        FROM employees
+        WHERE job_id = 'ST_MAN'
+        )
+ORDER BY salary DESC;
+
+-- My Code
 Select 
     employee_id,
     first_name,
     salary
 From 
-    employees
+    employees emp
 Where 
-    salary < ANY(Select emp.salary From jobs j
-                    Join employees emp On j.job_id = emp.job_id
-                 Where j.job_id = 'ST_MAN')
+    salary < ANY(
+        Select emp.salary 
+        From jobs j
+            Join employees emp 
+                On j.job_id = emp.job_id
+        Where j.job_id = 'ST_MAN')
 Order By
     salary Desc;
 -- D3. Subquery가 아닌 다른 방법으로 풀 수 있는가?
@@ -186,7 +203,21 @@ Order By
 -- 출력 : 직원번호(employee_id), 이름(first_name), 급여(salary) 부서번호(department_id)
 -- 정렬 : 급여의 내림차순으로 정렬
 -------------------------------------------------------------------------------- 
--- (조건절)
+-- (조건절 비교)
+SELECT emp.employee_id,
+    emp.first_name,
+    emp.salary,
+    emp.department_id
+FROM employees emp
+WHERE 
+    (emp.department_id, emp.salary) IN (
+        SELECT department_id, MAX(salary)
+        FROM employees
+        GROUP BY department_id
+    )
+ORDER BY salary DESC;
+
+-- My Code
 Select
     emp.employee_id, 
     emp.first_name,
@@ -194,8 +225,12 @@ Select
     emp.department_id
 From 
     employees emp,
-    (Select department_id, Max(salary) maxSalary
-     From employees Group By department_id) best
+    (
+        Select 
+            department_id, 
+            Max(salary) maxSalary
+        From employees 
+        Group By department_id) best
 Where
     emp.department_id = best.department_id And 
     emp.salary >= maxSalary
@@ -213,6 +248,23 @@ Order By
 --            급여(salary) 부서번호(department_id)를 조회하세요
 --            단, 조회결과는 급여의 내림차순으로 정렬되어 나타나야 합니다. 
 --            (테이블 조인)
+SELECT 
+    emp.employee_id,
+    emp.first_name,
+    emp.salary,
+    emp.department_id
+FROM employees emp
+    JOIN
+    (
+        SELECT department_id, MAX(salary) salary
+        FROM employees
+        GROUP BY department_id 
+    ) t
+        ON emp.department_id = t.department_id
+WHERE emp.salary = t.salary
+ORDER BY emp.salary DESC;
+
+-- My Code
 Select
     emp.employee_id, 
     emp.first_name,
@@ -237,21 +289,23 @@ Order By
 -- 출력 : 업무명(job_title)과 연봉 총합
 -- 정렬 : 연봉 총합, 내림차순
 --------------------------------------------------------------------------------
--- F1. 연봉의 총합 구하기
-Select Sum(salary)
-from employees emp
-    Join jobs j
-        On emp.job_id = j.job_id;
--- 691416
+SELECT 
+    j.job_title,
+    t.sumSalary,
+    j.job_id,
+    t.job_id
+FROM jobs j
+    JOIN (
+        SELECT 
+            job_id, 
+            SUM(salary) sumSalary
+        FROM employees
+        GROUP BY job_id
+    ) t
+        ON j.job_id = t.job_id
+ORDER BY sumSalary DESC;
 
--- F2. 각 업무로 그룹화하기
-Select job_id
-From employees
-Group By job_id;
-
---------------------------------------------------------------------------------
--- Answer F3. 각 업무(job) 별로 연봉(salary)의 총합을 구하고자 합니다.
--- 연봉 총합이 가장 높은 업무부터 업무명(job_title)과 연봉 총합을 조회하시오 (19건)
+-- My Code
 Select 
     j.job_id 업무, 
     Sum(emp.salary) 연봉총합
