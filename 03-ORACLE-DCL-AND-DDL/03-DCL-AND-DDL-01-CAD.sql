@@ -23,9 +23,3 @@ DROP USER C##himedia CASCADE; -- CASCADE : 폭포수 or 연결된 것을 의미�
 -- 연습상태, 방법 2를 사용자 생성 (추천하지 않음)
 ALTER SESSION SET "_ORACLE_SCRIPT" = true;
 CREATE USER himedia IDENTIFIED BY himedia;
-
--- GRANT 시스템권한목록 TO 사용자|역할|PUBLIC [WITH ADMIN OPTION] -> 시스템 권한 부여
--- REVOKE 회수할권한 FROM 사용자|역할|PUBLIC
-
--- GRANT 객체개별권한|ALL ON 객체명 TO 사용자|역할|PUBLIC [WITH ADMIN OPTION]
--- REVOKE 회수할권한 ON 객체명 FROM 사용자|역할|PUBLIC
