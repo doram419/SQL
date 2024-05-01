@@ -324,6 +324,21 @@ Order By Sum(emp.salary) Desc;
 -- 요구사항 : 자신의 부서 평균 급여보다 급여(salary)이 많은 직원 구하기
 -- 출력 : 직원번호(employee_id), 이름(first_name), 급여(salary)
 --------------------------------------------------------------------------------
+SELECT 
+    emp.employee_id,
+    emp.first_name,
+    emp.salary
+FROM employees emp
+    JOIN (
+        SELECT 
+            department_id,
+            AVG(salary) salary
+        FROM employees
+        GROUP BY department_id
+    )   t
+        ON emp.department_id = t.department_id
+WHERE
+    emp.salary > t.salary;
 
 -- My Code
 Select 
@@ -353,25 +368,49 @@ Where
 -- 출력 : 사번, 이름, 급여, 입사일
 -- 정렬 : 입사일 순서
 --------------------------------------------------------------------------------
--- H1. 직원 입사일 순서대로 나열하기
-Select 
+SELECT
     employee_id,
     first_name,
     salary,
-    hire_date,
-    Row_Number() Over(Order By hire_date) as row_number
-From employees
-Order By row_number;
+    hire_date
+FROM
+    (
+    SELECT rownum rn,
+        employee_id,
+        first_name,
+        salary,
+        hire_date
+    FROM 
+        (
+            SELECT 
+                employee_id,
+                first_name,
+                salary,
+                hire_date
+            FROM
+                employees
+            ORDER BY hire_date
+        )
+    )
+WHERE 
+    rn >= 11 AND
+    rn <= 15;
 
---------------------------------------------------------------------------------
--- Answer H2. 직원 입사일이 11번째에서 15번째의 직원의 사번, 이름, 급여, 
---            입사일을 입사일 순서로 출력하세요
+
+-- My Code
 Select 
     employee_id 사번,
     first_name 이름,
     salary 급여,
     hire_date 입사일
-From (Select employee_id, first_name, salary, hire_date,
-    Row_Number() Over(Order By hire_date) as rowNumber From employees) rank
+From (
+    Select 
+        employee_id, 
+        first_name, 
+        salary, 
+        hire_date,
+        Row_Number() Over(Order By hire_date) as rowNumber 
+    From employees
+    ) rank
 Where 
     rank.rownumber >= 11 And rank.rownumber <= 15;
