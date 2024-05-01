@@ -324,19 +324,8 @@ Order By Sum(emp.salary) Desc;
 -- 요구사항 : 자신의 부서 평균 급여보다 급여(salary)이 많은 직원 구하기
 -- 출력 : 직원번호(employee_id), 이름(first_name), 급여(salary)
 --------------------------------------------------------------------------------
--- G1. 평균 급여 구하기
-Select Avg(salary)
-from employees;
 
--- G2. 부서 나눠서 평균 급여 구하기
-Select Avg(salary)
-from employees
-Group By 
-    department_id;
-    
---------------------------------------------------------------------------------
--- Answer G3. 자신의 부서 평균 급여보다 급여(salary)이 많은 직원의 직원번호(employee_id), 
---            이름(first_name)과 급여(salary)을 조회하세요 (38건)
+-- My Code
 Select 
     emp.employee_id 직원번호,
     emp.first_name 이름,
@@ -344,8 +333,13 @@ Select
     Round(avgSal) "부서 평균급여"
 From 
     employees emp,
-    (Select department_id, Avg(salary) avgSal from employees 
-     Group By department_id) deptAvg
+    (
+        Select 
+            department_id, 
+            Avg(salary) avgSal 
+        From employees 
+        Group By department_id
+    ) deptAvg
 Where
     emp.department_id = deptAvg.department_id AND
     emp.salary > avgSal;
