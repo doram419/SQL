@@ -29,7 +29,7 @@ ORDER BY emp.salary;
 - 조건절 비교 방법으로 작성하세요 ✓
 - 급여의 내림차순으로 정렬하세요 ✓
 - 입사일은 2001-01-13 토요일 형식으로 출력합니다 ✓
-- 전화번호는 515-123-4567 형식으로 출력합니다.
+- 전화번호는 515-123-4567 형식으로 출력합니다 ✓
 (11건)
 ---------------------------------------------------------------------
 */
@@ -40,7 +40,7 @@ SELECT
     emp.first_name 이름,
     emp.salary 급여,
     TO_CHAR(emp.hire_date, 'YYYY-MM-DD DAY') 입사일,
-    emp.phone_number 전화번호,
+    REPLACE(emp.phone_number, '.','-') 전화번호,
     emp.department_id 부서번호 
 FROM 
     employees emp, 
@@ -62,11 +62,46 @@ ORDER BY
 문제 3.
 매니저별로 평균급여 최소급여 최대급여를 알아보려고 한다.
 -통계대상(직원)은 2015년 이후의 입사자 입니다.
--매니저별 평균급여가 5000이상만 출력합니다.
+-매니저별 평균급여가 5000 이상만 출력합니다.
 -매니저별 평균급여의 내림차순으로 출력합니다.
 -매니저별 평균급여는 소수점 첫째자리에서 반올림 합니다.
--출력내용은 매니저 아이디, 매니저이름(first_name), 매니저별 평균급여, 매니저별 최소급여,
-매니저별 최대급여 입니다.
+-출력내용은 매니저 아이디, 매니저 이름(first_name), 매니저별 평균급여, 매니저별 최소급여,
+ 매니저별 최대급여 입니다.
 (9건)
 ---------------------------------------------------------------------
 */
+
+-- 매니저 별로 평균 급여, 최소 급여, 최대 급여 알아보기
+CREATE TABLE managers AS(
+    SELECT 
+        manager_id,
+        ROUND(AVG(salary),1) avg_salary,
+        MIN(salary) min_salary,
+        MAX(salary) max_salary
+    FROM
+        employees
+    GROUP BY
+        manager_id
+);
+
+select * FROM managers;
+    
+SELECT 
+    emp.employee_id,
+    emp.manager_id 매니저아이디,
+    emp.first_name 이름,
+    emp.hire_date,
+    mgrs.avg_salary 평균임금,
+    mgrs.min_salary 최저급여,
+    mgrs.max_salary 최대급여
+FROM employees emp
+    JOIN managers mgrs
+        ON emp.employee_id = mgrs.manager_id
+WHERE
+    hire_date >= '15/01/01' AND
+    mgrs.avg_salary >= 5000 
+ORDER BY
+    mgrs.avg_salary;
+
+
+
