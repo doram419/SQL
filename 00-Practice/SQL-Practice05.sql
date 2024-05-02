@@ -36,12 +36,12 @@ ORDER BY emp.salary;
 
 -- 각 부서별로 최고의 급여를 받는 사원의 정보를 조회
 SELECT 
-    emp.employee_id,
-    emp.first_name,
-    emp.salary,
+    emp.employee_id 직원번호,
+    emp.first_name 이름,
+    emp.salary 급여,
     TO_CHAR(emp.hire_date, 'YYYY-MM-DD DAY') 입사일,
-    emp.phone_number,
-    emp.department_id 
+    emp.phone_number 전화번호,
+    emp.department_id 부서번호 
 FROM 
     employees emp, 
     (
