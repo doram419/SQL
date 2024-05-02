@@ -244,6 +244,7 @@ COMMIT;
 
 -- 연습
 -- hr.employees 테이블을 기반으로 department_id 10, 20, 30인 직원들만 새 테이블 emp123으로 생성
+
 CREATE TABLE emp123 AS(
     SELECT *
     FROM employees
@@ -270,6 +271,13 @@ WHERE JOB_ID LIKE 'MK_%';
 
 SELECT * FROM emp123;
 
+DELETE FROM emp123;
+
+SELECT * FROM emp123;
+
+ROLLBACK;
+
+SELECT * FROM emp123;
 
 
 
