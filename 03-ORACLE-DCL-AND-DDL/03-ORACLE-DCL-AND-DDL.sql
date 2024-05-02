@@ -120,6 +120,16 @@ SELECT * FROM tabs;
 
 DESC book;
 
+-- author 테이블 생성
+CREATE TABLE author (
+    -- author_id NUMBER(10) PRIMARY KEY : 이렇게 해도 되지만 테이블 PRIMARY KEY로 지정해도 됨
+    author_id NUMBER(10),
+    author_name VARCHAR2(100) NOT NULL,
+    author_desc VARCHAR2(500),
+    PRIMARY KEY(author_id) -- 복합키는 항상 이 방식으로 해야함
+);
+
+DESC author;
 
 
 

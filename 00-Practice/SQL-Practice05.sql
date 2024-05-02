@@ -22,7 +22,7 @@ ORDER BY emp.salary;
 
 /*
 ---------------------------------------------------------------------
-문제1.
+문제2.
 각 부서별로 최고의 급여를 받는 사원의 직원번호(employee_id), 이름(first_name), 급여
 (salary), 입사일(hire_date), 전화번호(phone_number), 부서번호(department_id)를 조회하세
 요
@@ -39,15 +39,16 @@ SELECT
     employee_id,
     department_id 
 FROM 
-    (
-    SELECT 
-        (department_id, employee_id) IN 
-            (S
-            ),
-        MAX(salary) maxSalary
-    FROM 
-        employees
-    GROUP BY 
-        department_id
-    ) bestSalary
+    employees
+WHERE
+    (department_id, employee_id) IN 
+        (
+            SELECT 
+                department_id,
+                MAX(salary) 
+            FROM employees
+            GROUP BY department_id
+        ) 
 ;
+
+
