@@ -27,3 +27,4 @@ On emp.manager_id = dept.manager_id
 AND emp.manager_id = dept.manager_id;
 
 -- 그래서 Natual Join을 쓰는 거보다 명시적으로 해주는게 나을 수 있다.
+
