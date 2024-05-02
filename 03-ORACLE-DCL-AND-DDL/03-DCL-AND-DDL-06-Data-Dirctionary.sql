@@ -1,3 +1,9 @@
+-- DICTIONARY
+
+-- USER_ : 현재 로그인된 사용자에게 허용된 뷰
+-- ALL_ : 모든 사용자 뷰
+-- DBA_ : DBA에게 허용된 뷰
+
 CREATE TABLE book (
     book_id NUMBER(5),
     title VARCHAR2(50),
@@ -5,9 +11,29 @@ CREATE TABLE book (
     pub_date DATE DEFAULT SYSDATE
 );
 
-CREATE TABLE author (
-    author_id NUMBER(10),
-    author_name VARCHAR2(100) NOT NULL,
-    author_desc VARCHAR2(500),
-    PRIMARY KEY(author_id) 
-);
+-- 모든 DICTIONARY 확인 : hr - 1098건
+SELECT * FROM DICTIONARY
+ORDER BY TABLE_NAME;
+
+-- 사용자 스키마 객체 : USER_OBJECTS
+SELECT * FROM USER_OBJECTS;
+
+-- 사용자 스키마의 이름과 타입 정보 출력
+SELECT OBJECT_NAME, OBJECT_TYPE FROM USER_OBJECTS;
+
+-- 제약 조건의 확인
+SELECT * FROM USER_CONSTRAINTS;
+SELECT 
+    CONSTRAINT_NAME,
+    CONSTRAINT_TYPE,
+    SEARCH_CONDITION,
+    TABLE_NAME
+FROM USER_CONSTRAINTS;
+
+-- BOOK 테이블에 적용된 제약 조건의 확인
+SELECT 
+    CONSTRAINT_NAME,
+    CONSTRAINT_TYPE,
+    SEARCH_CONDITION
+FROM USER_CONSTRAINTS
+WHERE TABLE_NAME = 'BOOK';
