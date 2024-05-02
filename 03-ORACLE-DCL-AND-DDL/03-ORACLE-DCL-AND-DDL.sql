@@ -131,26 +131,70 @@ CREATE TABLE author (
 
 DESC author;
 
+-- book 테이블의 author 컬럼 삭제
+-- 나중에 author_id 컬럼 추가 -> author.author_id와 참조 연결할 예정
+ALTER TABLE book DROP COLUMN author;
 
+DESC book;
 
+-- book 테이블에 author_id 컬럼 추가
+-- author.author_id를 참조하는 컬럼 author.author_id 컬럼과 같은 형태여야 한다.
+ALTER TABLE book ADD(author_id NUMBER(10));
+DESC book;
+DESC author;
 
+-- book 테이블의 book_id도 author 테이블의 PK와 같은 데이터 타입 NUMBER(10)으로 변경
+ALTER TABLE book MODIFY (book_id NUMBER(10));
+DESC book; -- book_id NUMBER(5) -> book_id NUMBER(10)
 
+-- book 테이블의 book_id 컬럼에는 PRIMARY KEY 제약 조건을 부여
+ALTER TABLE book 
+ADD CONSTRAINT pk_book_id PRIMARY KEY (book_id);
+DESC book;
 
+-- book 테이블의 author_id 컬럼과 author 테이블의 author_id를 fk로 연결
+ALTER TABLE book 
+ADD CONSTRAINT fk_author_id 
+    FOREIGN KEY(author_id)      
+REFERENCES author(author_id);
+DESC book;
 
+-- DICTIONARY
 
+-- USER_ : 현재 로그인된 사용자에게 허용된 뷰
+-- ALL_ : 모든 사용자 뷰
+-- DBA_ : DBA에게 허용된 뷰
 
+-- 모든 DICTIONARY 확인 : hr - 1098건
+SELECT * FROM DICTIONARY
+ORDER BY TABLE_NAME;
 
+-- 사용자 스키마 객체 : USER_OBJECTS
+SELECT * FROM USER_OBJECTS;
 
+-- 사용자 스키마의 이름과 타입 정보 출력
+SELECT OBJECT_NAME, OBJECT_TYPE FROM USER_OBJECTS;
 
+-- 제약 조건의 확인
+SELECT * FROM USER_CONSTRAINTS;
+SELECT 
+    CONSTRAINT_NAME,
+    CONSTRAINT_TYPE,
+    SEARCH_CONDITION,
+    TABLE_NAME
+FROM USER_CONSTRAINTS;
 
+-- BOOK 테이블에 적용된 제약 조건의 확인
+SELECT 
+    CONSTRAINT_NAME,
+    CONSTRAINT_TYPE,
+    SEARCH_CONDITION
+FROM USER_CONSTRAINTS
+WHERE TABLE_NAME = 'BOOK';
 
-
-
-
-
-
-
-
+-- INSERT : 테이블에 새 레코드(튜플) 추가
+-- 제공된 컬럼 목록의 순서와 타입, 값 목록의 순서와 타입이 일치해야 함
+-- 컬럼 목록을 제공하지 않으면 테이블 생성시 정의된 컬럼의 순서와 타입을 따른다
 
 
 
