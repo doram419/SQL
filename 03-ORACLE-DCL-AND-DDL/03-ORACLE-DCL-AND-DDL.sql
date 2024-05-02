@@ -129,8 +129,6 @@ CREATE TABLE author (
     PRIMARY KEY(author_id) -- 복합키는 항상 이 방식으로 해야함
 );
 
-DESC author;
-
 -- book 테이블의 author 컬럼 삭제
 -- 나중에 author_id 컬럼 추가 -> author.author_id와 참조 연결할 예정
 ALTER TABLE book DROP COLUMN author;
@@ -192,6 +190,8 @@ SELECT
 FROM USER_CONSTRAINTS
 WHERE TABLE_NAME = 'BOOK';
 
+TRUNCATE TABLE author;
+
 -- INSERT : 테이블에 새 레코드(튜플) 추가
 -- 제공된 컬럼 목록의 순서와 타입, 값 목록의 순서와 타입이 일치해야 함
 -- 컬럼 목록을 제공하지 않으면 테이블 생성시 정의된 컬럼의 순서와 타입을 따른다
@@ -200,34 +200,75 @@ WHERE TABLE_NAME = 'BOOK';
 INSERT INTO author
 VALUES(1, '박경리', '토지 작가');
 
+SELECT * FROM author;
+
 -- 컬럼 목록을 제시했을 때,
 -- 제시한 컬럼의 순서와 타입대로 값 목록을 제공해야 함.
+INSERT INTO author(author_id, author_name)
+VALUES(2, '김영하');
 
+SELECT * FROM author;
 
+-- 컬럼 목록을 제공했을 때,
+-- 테이블 생성시 정의된 컬럼의 순서와 상관 없이 데이터 제공 가능
+INSERT INTO author(author_name, author_id, author_desc)
+VALUES('류츠신', 3,'삼체 작가');
 
+-- ROLLBACK; -- 반영 취소
 
+COMMIT; -- 반영
 
+-- UPDATE
+-- 특정 레코드의 컬럼 값을 변경한다
+-- WHERE 절이 없으면 모든 레코드가 변경
+-- 가급적 WHERE 절로 변경하고자 하는 레코드를 지정하도록 함
 
+UPDATE author
+SET author_desc = '알쓸신잡 출연';
+-- 3개 행 이(가) 업데이트 되었습니다.
+-- WHERE이 없어서 전부 변경됨..!!
 
+ROLLBACK;
 
+UPDATE author
+SET author_desc = '알쓸신잡 출연'
+WHERE author_name = '김영하';
 
+SELECT * FROM author;
 
+COMMIT;
 
+-- DELETE
+-- 테이블로부터 특정 레코드를 삭제
+-- WHERE 절이 없으면 모든 레코드 삭제(주의)
 
+-- 연습
+-- hr.employees 테이블을 기반으로 department_id 10, 20, 30인 직원들만 새 테이블 emp123으로 생성
+CREATE TABLE emp123 AS(
+    SELECT *
+    FROM employees
+    WHERE department_id IN (10, 20, 30)
+);
+DESC emp123;
 
+SELECT 
+    first_name,
+    salary,
+    department_id
+FROM emp123;
 
+-- 부서가 30인 직원들의 급여를 10% 인상
+UPDATE emp123
+SET salary = salary + salary * 0.1
+WHERE department_id = 30;
 
+SELECT * FROM emp123;
 
+-- JOB_ID가 'MK_'로 시작하는 직원들 삭제
+DELETE FROM emp123
+WHERE JOB_ID LIKE 'MK_%';
 
-
-
-
-
-
-
-
-
-
+SELECT * FROM emp123;
 
 
 
