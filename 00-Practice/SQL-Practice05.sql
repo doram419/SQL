@@ -71,7 +71,6 @@ ORDER BY
 ---------------------------------------------------------------------
 */
 
--- 매니저 별로 평균 급여, 최소 급여, 최대 급여 알아보기
 CREATE TABLE managers AS(
     SELECT 
         manager_id,
@@ -102,6 +101,60 @@ WHERE
     mgrs.avg_salary >= 5000 
 ORDER BY
     mgrs.avg_salary;
+    
+DROP TABLE managers;
+    
+/*
+---------------------------------------------------------------------
+문제4.
+각 사원(employee)에 대해서 사번(employee_id), 이름(first_name), 부서명
+(department_name), 매니저(manager)의 이름(first_name)을 조회하세요.
+부서가 없는 직원(Kimberely)도 표시합니다.
+(106명)
+---------------------------------------------------------------------
+*/
 
+/*
+---------------------------------------------------------------------
+문제7.평균연봉(salary)이 가장 높은 부서 직원들의 직원번호(employee_id), 이름(first_name), 
+성(last_name)과 업무(job_title), 연봉(salary)을 조회하시오.
+---------------------------------------------------------------------
+*/
+
+CREATE TABLE avgSalarys AS(
+    SELECT 
+        department_id,
+        AVG(salary) avg_salary
+    FROM 
+        employees
+    Group By
+        department_id
+);
+
+select 
+    emp.employee_id,
+    emp.first_name,
+    emp.last_name,
+    emp.salary,
+    j.job_title
+    
+FROM 
+    employees emp,
+        (SELECT
+            rownum rn,
+            department_id
+        FROM 
+            avgSalarys
+        ORDER BY
+            avg_salary DESC) name,
+    jobs j
+
+        
+WHERE
+    name.rn = 1 AND
+    emp.department_id = name.department_id AND
+    j.job_id = emp.job_id;
+
+-- 공동저자 : 신예은, 정우찬
 
 
