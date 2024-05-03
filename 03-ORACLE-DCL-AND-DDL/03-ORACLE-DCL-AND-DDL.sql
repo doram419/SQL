@@ -252,6 +252,7 @@ CREATE TABLE emp123 AS(
 );
 DESC emp123;
 
+
 SELECT 
     first_name,
     salary,
