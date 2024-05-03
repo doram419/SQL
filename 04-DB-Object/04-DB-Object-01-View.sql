@@ -77,17 +77,3 @@ SELECT * FROM USER_OBJECTS;
 -- VIEW 삭제해도 기반 테이블 데이터는 삭제되지 않는다
 DROP VIEW emp_detail;
 SELECT * FROM USER_VIEWS;
-
------------------------------------------------------------------------------
--- INDEX
------------------------------------------------------------------------------
-
--- hr.employees 테이블 복사 s_emp 테이블 생성
-CREATE TABLE s_emp AS
-(
-    SELECT * FROM hr.EMPLOYEES
-);
-
-DESC s_emp;
-
-SELECT * FROM s_emp;
