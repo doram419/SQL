@@ -253,9 +253,7 @@ FROM
     dual;
 
 -- 시퀀스 수정
-ALTER SEQUENCE my_seq
-    INCREMENT BY 2
-    MAXVALUE 100000;
+ALTER SEQUENCE my_seq INCREMENT BY 2 MAXVALUE 100000;
 
 SELECT
     my_seq.currval
@@ -266,3 +264,41 @@ SELECT
     my_seq.nextval
 FROM
     dual;
+
+-- 시퀀스를 위한 딕셔너리
+SELECT
+    *
+FROM
+    user_sequences;
+
+SELECT
+    *
+FROM
+    user_objects
+WHERE
+    object_type = 'SEQUENCE';
+
+-- 시퀀스 삭제
+DROP SEQUENCE my_seqs;
+
+SELECT
+    *
+FROM
+    user_sequences;
+
+-- book 테이블 pk의 현재 값 확인
+SELECT
+    MAX(book_id)
+FROM
+    book;
+
+CREATE SEQUENCE seq_book_id
+    START WITH 3
+    INCREMENT BY 1
+    MAXVALUE 1000000
+    NOCACHE;
+
+SELECT
+    *
+FROM
+    user_sequences;
