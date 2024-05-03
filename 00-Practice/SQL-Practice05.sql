@@ -7,18 +7,19 @@
 ---------------------------------------------------------------------
 */
 
-SELECT 
-    emp.first_name 이름,
-    emp.manager_id 매니저아이디,
+SELECT
+    emp.first_name     이름,
+    emp.manager_id     매니저아이디,
     emp.commission_pct 커미션비율,
-    emp.salary 월급
+    emp.salary         월급
 FROM
     employees emp
 WHERE
-    emp.manager_id IS NOT NULL AND
-    emp.commission_pct IS NULL AND
-    emp.salary > 3000
-ORDER BY emp.salary;
+    emp.manager_id IS NOT NULL
+    AND emp.commission_pct IS NULL
+    AND emp.salary > 3000
+ORDER BY
+    emp.salary;
 
 /*
 ---------------------------------------------------------------------
@@ -35,28 +36,30 @@ ORDER BY emp.salary;
 */
 
 -- 각 부서별로 최고의 급여를 받는 사원의 정보를 조회
-SELECT 
-    emp.employee_id 직원번호,
-    emp.first_name 이름,
-    emp.salary 급여,
-    TO_CHAR(emp.hire_date, 'YYYY-MM-DD DAY') 입사일,
-    REPLACE(emp.phone_number, '.','-') 전화번호,
-    emp.department_id 부서번호 
-FROM 
-    employees emp, 
+SELECT
+    emp.employee_id                          직원번호,
+    emp.first_name                           이름,
+    emp.salary                               급여,
+    to_char(emp.hire_date, 'YYYY-MM-DD DAY') 입사일,
+    replace(emp.phone_number, '.', '-')      전화번호,
+    emp.department_id                        부서번호
+FROM
+    employees emp,
     (
-    SELECT 
-        department_id,
-        MAX(salary) max_salary 
-    FROM employees
-    GROUP BY department_id
-    ) maxSalarys
+        SELECT
+            department_id,
+            MAX(salary)   max_salary
+        FROM
+            employees
+        GROUP BY
+            department_id
+    )         maxsalarys
 WHERE
-    emp.department_id = maxSalarys.department_id AND
-    emp.salary = maxSalarys.max_salary
+    emp.department_id = maxsalarys.department_id
+    AND emp.salary = maxsalarys.max_salary
 ORDER BY
     emp.salary ASC;
-    
+
 /*
 ---------------------------------------------------------------------
 문제 3.
@@ -72,38 +75,42 @@ ORDER BY
 */
 
 CREATE TABLE managers AS(
-    SELECT 
+    SELECT
         manager_id,
-        ROUND(AVG(salary),1) avg_salary,
-        MIN(salary) min_salary,
-        MAX(salary) max_salary
+        round(AVG(salary), 1) avg_salary,
+        MIN(salary)           min_salary,
+        MAX(salary)           max_salary
     FROM
         employees
     GROUP BY
         manager_id
 );
 
-select * FROM managers;
-    
-SELECT 
+SELECT
+    *
+FROM
+    managers;
+
+SELECT
     emp.employee_id,
-    emp.manager_id 매니저아이디,
-    emp.first_name 이름,
+    emp.manager_id  매니저아이디,
+    emp.first_name  이름,
     emp.hire_date,
     mgrs.avg_salary 평균임금,
     mgrs.min_salary 최저급여,
     mgrs.max_salary 최대급여
-FROM employees emp
+FROM
+    employees emp
     JOIN managers mgrs
-        ON emp.employee_id = mgrs.manager_id
+    ON emp.employee_id = mgrs.manager_id
 WHERE
-    hire_date >= '15/01/01' AND
-    mgrs.avg_salary >= 5000 
+    hire_date >= '15/01/01'
+    AND mgrs.avg_salary >= 5000
 ORDER BY
     mgrs.avg_salary;
-    
+
 DROP TABLE managers;
-    
+
 /*
 ---------------------------------------------------------------------
 문제4.
@@ -121,38 +128,69 @@ DROP TABLE managers;
 ---------------------------------------------------------------------
 */
 
-CREATE TABLE avgSalarys AS(
-    SELECT 
+CREATE TABLE avgsalarys AS(
+    SELECT
         department_id,
-        AVG(salary) avg_salary
-    FROM 
+        AVG(salary)   avg_salary
+    FROM
         employees
-    Group By
+    GROUP BY
         department_id
 );
 
-select 
+SELECT
     emp.employee_id,
     emp.first_name,
     emp.last_name,
     emp.salary,
     j.job_title
-    
-FROM 
+FROM
     employees emp,
-        (SELECT
-            rownum rn,
+    (
+        SELECT
+            rownum        rn,
             department_id
-        FROM 
-            avgSalarys
+        FROM
+            avgsalarys
         ORDER BY
-            avg_salary DESC) name,
-    jobs j
-        
+            avg_salary DESC
+    )         name,
+    jobs      j
 WHERE
-    name.rn = 1 AND
-    emp.department_id = name.department_id AND
-    j.job_id = emp.job_id;
+    name.rn = 1
+    AND emp.department_id = name.department_id
+    AND j.job_id = emp.job_id;
 
 -- 공동저자 : 신예은, 정우찬
 
+SELECT
+    employee_id                               직원번호,
+    first_name                                이름,
+    last_name                                 성,
+    job_title                                 업무,
+    salary                                    급여,
+    avg(salary) OVER (ORDER BY department_id) 평균급여
+FROM
+    employees
+    JOIN jobs
+    USING (job_id)
+WHERE
+    department_id = (
+        SELECT
+            department_id
+        FROM
+            (
+                SELECT
+                    department_id
+                FROM
+                    employees
+                GROUP BY
+                    department_id
+                ORDER BY
+                    AVG(salary)DESC
+            )
+        WHERE
+            ROWNUM = 1
+    );
+
+-- 예은 누나 코드
