@@ -91,3 +91,12 @@ CREATE TABLE s_emp AS
 DESC s_emp;
 
 SELECT * FROM s_emp;
+
+-- s_emp 테이블의 employee_id에 UNIQUE INDEX를 거는 코드
+CREATE UNIQUE INDEX s_emp_id_pk
+ON s_emp(employee_id);
+
+-- 그러나 데이터가 적어서 성능 테스트는 좀 힘들듯
+SELECT * FROM USER_INDEXS;
+
+
