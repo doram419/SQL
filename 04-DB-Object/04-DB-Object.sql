@@ -6,8 +6,7 @@
 -- VIEW  생성을 위한 SYSTEM 권한
 GRANT CREATE VIEW TO himedia;
 
-
-GRANT SELECT,UPDATE,INSERT,DELETE ON employees TO himedia;
+GRANT SELECT,UPDATE,INSERT,DELETE ON hr.employees TO himedia;
 GRANT SELECT ON hr.departments TO himedia;
 GRANT SELECT ON hr.emp123 TO himedia;
 
@@ -32,9 +31,10 @@ DESC emp10;
 SELECT * FROM emp10;
 SELECT FIRST_NAME || ' ' || LAST_NAME, salary FROM hr.emp123;
 
-
 -- SIMPLE VIEW는 제약 사항에 걸리지 않는다면 INSERT, UPDATE, DELETE을 할 수 있다.
-UPDATE emp10 SET salary = SALARY * 2;
+UPDATE himedia.emp10 
+SET salary = SALARY * 2;
+
 SELECT * FROM emp10;
 
 ROLLBACK;
@@ -43,11 +43,12 @@ ROLLBACK;
 -- WITH READ ONLY : 읽기 전용 뷰
 CREATE OR REPLACE VIEW emp10
     AS SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, SALARY
-    FROM emp123
+    FROM hr.emp123
     WHERE DEPARTMENT_ID = 10
-    WITH READ_ONLY;
+    WITH READ ONLY;
 
-UPDATE emp10 SET SALARY = SALARY * 2;
+UPDATE himedia.emp10 SET SALARY = SALARY * 2;
+-- READ ONLY니까 UPDATE 안 되는게 당연해. 바부였구나
 
 -- Complex View
 -- 한 개 혹은 여러 개의 테이블 혹은 뷰에 JOIN, 함수, 연산식 등을 활용한 VIEW
@@ -59,7 +60,7 @@ AS SELECT
     emp.FIRST_NAME || emp.LAST_NAME,
     man.FIRST_NAME || man.LAST_NAME,
     DEPARTMENT_NAME
-FROM HR.EMPLOYEES emp,
+FROM HR.EMPLOYEES emp
     JOIN HR.employees man ON emp.MANAGER_ID = man.manager_id
     JOIN HR.departments dept ON emp.DEPARTMENT_ID = dept.department_id;
 
