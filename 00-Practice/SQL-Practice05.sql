@@ -148,7 +148,6 @@ FROM
         ORDER BY
             avg_salary DESC) name,
     jobs j
-
         
 WHERE
     name.rn = 1 AND
@@ -156,5 +155,4 @@ WHERE
     j.job_id = emp.job_id;
 
 -- 공동저자 : 신예은, 정우찬
-
 
