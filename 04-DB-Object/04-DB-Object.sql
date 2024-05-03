@@ -103,4 +103,11 @@ SELECT * FROM USER_INDEXES;
 -- 어느 인덱스가 어느 컬럼에 걸려 있는지 확인
 SELECT * FROM USER_IND_COLUMNS;
 
+-- 어느 인덱스가 어느 컬럼에 걸려있는지 JOIN해서 알아봄
+SELECT 
+    t.INDEX_NAME, c.COLUMN_NAME, c.COLUMN_POSITION
+FROM USER_INDEX t
+    JOIN USER_IND_COLUMNS c
+        ON t.INDEX_NAME = c.INDEX_NAME;
+WHERE t.TABLE_NAME = 's_emp';
 
