@@ -121,6 +121,18 @@ DROP TABLE managers;
 ---------------------------------------------------------------------
 */
 
+SELECT 
+    emp.employee_id 사번,
+    emp.first_name 이름,
+    dept.department_name 부서명,
+    mgr.first_name 매니저
+FROM
+    employees emp
+    JOIN employees mgr
+        ON emp.manager_id = mgr.employee_id
+    LEFT OUTER JOIN departments dept
+        ON emp.department_id = dept.department_id;
+
 
 
 /*
