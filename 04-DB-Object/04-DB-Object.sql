@@ -97,6 +97,10 @@ CREATE UNIQUE INDEX s_emp_id_pk
 ON s_emp(employee_id);
 
 -- 그러나 데이터가 적어서 성능 테스트는 좀 힘들듯
-SELECT * FROM USER_INDEXS;
+-- 인덱스가 생성됬는지 확인
+SELECT * FROM USER_INDEXES;
+
+-- 어느 인덱스가 어느 컬럼에 걸려 있는지 확인
+SELECT * FROM USER_IND_COLUMNS;
 
 
