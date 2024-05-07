@@ -331,7 +331,7 @@ CREATE TABLE avgsalary AS(
 );
 
 SELECT
-     reg.region_name   
+     reg.region_name
 FROM    
     (
     SELECT
@@ -343,7 +343,16 @@ FROM
     JOIN regions reg
         ON avs.region_id = reg.region_id
 WHERE
-    avs.rn = 1; -- 식사 후 해결
+    avs.rn = 1; 
+
+/*
+---------------------------------------------------------------------
+문제9.
+평균 급여(salary)가 가장 높은 업무는?
+---------------------------------------------------------------------
+*/
+    
+
     
 
     
