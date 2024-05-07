@@ -347,12 +347,29 @@ WHERE
 
 /*
 ---------------------------------------------------------------------
-문제9.
+문제10.
 평균 급여(salary)가 가장 높은 업무는?
 ---------------------------------------------------------------------
 */
     
-
+SELECT 
+    j.job_title
+FROM
+  (
+    SELECT 
+        job_id,
+        ROUND(AVG(salary)) avg_salary,
+        RANK() OVER(ORDER BY AVG(salary) DESC) salary_rank 
+    FROM
+        employees
+    GROUP BY
+        job_id
+  ) emp
+JOIN jobs j
+    ON emp.job_id = j.job_id
+WHERE
+    emp.salary_rank = 1;
     
+   
 
     
