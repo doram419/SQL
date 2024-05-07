@@ -82,6 +82,8 @@ CREATE TABLE managers AS(
         MAX(salary)           max_salary
     FROM
         employees
+    WHERE
+        hire_date >= '15/01/01'
     GROUP BY
         manager_id
 );
@@ -104,8 +106,7 @@ FROM
     JOIN managers mgrs
     ON emp.employee_id = mgrs.manager_id
 WHERE
-    hire_date >= '15/01/01'
-    AND mgrs.avg_salary >= 5000
+    mgrs.avg_salary >= 5000
 ORDER BY
     mgrs.avg_salary;
 
@@ -121,24 +122,69 @@ DROP TABLE managers;
 ---------------------------------------------------------------------
 */
 
-SELECT 
-    emp.employee_id 사번,
-    emp.first_name 이름,
+SELECT
+    emp.employee_id      사번,
+    emp.first_name       이름,
     dept.department_name 부서명,
-    mgr.first_name 매니저
+    mgr.first_name       매니저
 FROM
-    employees emp
+    employees   emp
     JOIN employees mgr
-        ON emp.manager_id = mgr.employee_id
+    ON emp.manager_id = mgr.employee_id
     LEFT OUTER JOIN departments dept
-        ON emp.department_id = dept.department_id;
+    ON emp.department_id = dept.department_id;
+    
+/*
+---------------------------------------------------------------------
+문제5. 2015년 이후 입사한 직원 중에 입사일이 11번째에서 20번째의 직원의
+사번, 이름, 부서명, 급여, 입사일을 입사일 순서로 출력하세요
+---------------------------------------------------------------------
+*/
 
+SELECT
+    emp.Employee_Id,
+    emp.first_name,
+    DEPT.department_name,
+    emp.salary,
+    emp.hire_date
+FROM
+    (
+        SELECT
+            RANK() OVER(ORDER BY hire_date ASC) rw,
+            employee_id,
+            first_name,
+            department_id,
+            salary,
+            hire_date
+        FROM
+            employees
+        WHERE
+            hire_date >= '15/01/01'
 
+    ) emp
+JOIN 
+    departments dept
+ON 
+    emp.department_id = dept.department_id
+WHERE 
+    emp.rw >= 11 AND emp.rw <= 20
+ORDER BY
+    emp.hire_date;
 
 /*
 ---------------------------------------------------------------------
-문제7.평균연봉(salary)이 가장 높은 부서 직원들의 직원번호(employee_id), 이름(first_name), 
-성(last_name)과 업무(job_title), 연봉(salary)을 조회하시오.
+문제6.
+가장 늦게 입사한 직원의 이름(first_name last_name)과 연봉(salary)과 근무하는 부서 이름
+(department_name)은?
+---------------------------------------------------------------------
+*/
+    
+
+/*
+---------------------------------------------------------------------
+문제7.
+평균연봉(salary)이 가장 높은 부서 직원들의 직원번호(employee_id), 이름(firt_name), 성
+(last_name)과 업무(job_title), 연봉(salary)을 조회하시오.
 ---------------------------------------------------------------------
 */
 
