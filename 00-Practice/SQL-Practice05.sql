@@ -133,7 +133,7 @@ FROM
     ON emp.manager_id = mgr.employee_id
     LEFT OUTER JOIN departments dept
     ON emp.department_id = dept.department_id;
-    
+
 /*
 ---------------------------------------------------------------------
 문제5. 2015년 이후 입사한 직원 중에 입사일이 11번째에서 20번째의 직원의
@@ -150,7 +150,7 @@ SELECT
 FROM
     (
         SELECT
-            RANK() OVER(ORDER BY hire_date ASC) rw,
+            rank() OVER(ORDER BY hire_date ASC) rw,
             employee_id,
             first_name,
             department_id,
@@ -160,14 +160,12 @@ FROM
             employees
         WHERE
             hire_date >= '15/01/01'
-
-    ) emp
-JOIN 
-    departments dept
-ON 
-    emp.department_id = dept.department_id
-WHERE 
-    emp.rw >= 11 AND emp.rw <= 20
+    )           emp
+    JOIN departments dept
+    ON emp.department_id = dept.department_id
+WHERE
+    emp.rw >= 11
+    AND emp.rw <= 20
 ORDER BY
     emp.hire_date;
 
@@ -179,14 +177,16 @@ ORDER BY
 ---------------------------------------------------------------------
 */
 SELECT
-    emp.first_name || ' ' || emp.last_name 이름,
+    emp.first_name
+    || ' '
+    || emp.last_name     이름,
     dept.department_name,
     emp.salary,
     emp.hire_date
 FROM
     (
         SELECT
-            RANK() OVER(ORDER BY hire_date DESC) rw,
+            rank() OVER(ORDER BY hire_date DESC) rw,
             employee_id,
             first_name,
             last_name,
@@ -195,12 +195,10 @@ FROM
             hire_date
         FROM
             employees
-    ) emp
-JOIN 
-    departments dept
-ON 
-    emp.department_id = dept.department_id
-WHERE 
+    )           emp
+    JOIN departments dept
+    ON emp.department_id = dept.department_id
+WHERE
     emp.rw = 1
 ORDER BY
     emp.hire_date;
@@ -287,15 +285,65 @@ WHERE
 ---------------------------------------------------------------------
 */
 
-CREATE TABLE avgSalary AS(
+CREATE TABLE avgsalary AS(
     SELECT
-    ROUND(AVG(salary)) avg_salary,
-    department_id
-FROM
-    employees
-GROUP BY
-    department_id
+        round(AVG(salary))                            avg_salary,
+        rank() OVER(ORDER BY round(AVG(salary)) DESC) avg_salary_rank,
+        department_id
+    FROM
+        employees
+    GROUP BY
+        department_id
 );
 
+SELECT
+    dept.department_name
+FROM
+    avgsalary avs
+    JOIN departments dept
+    ON dept.department_id = avs.department_id
+WHERE
+    avg_salary_rank = 1;
+    
+DROP TABLE avgsalary;
+    
+/*
+---------------------------------------------------------------------
+문제9.
+평균 급여(salary)가 가장 높은 지역은?
+---------------------------------------------------------------------
+*/
 
+CREATE TABLE avgsalary AS(
+    SELECT
+        coun.region_id,
+        ROUND(AVG(salary)) avg_salary
+    FROM
+        employees emp
+    JOIN departments dept
+        ON dept.department_id = emp.department_id
+    JOIN locations loc
+        ON dept.location_id = loc.location_id
+    JOIN countries coun
+        ON loc.country_id = coun.country_id
+    GROUP BY 
+        coun.region_id
+);
 
+SELECT
+     reg.region_name   
+FROM    
+    (
+    SELECT
+        region_id,
+        RANK() OVER(ORDER BY avg_salary DESC) rn
+    FROM 
+        avgsalary 
+    ) avs
+    JOIN regions reg
+        ON avs.region_id = reg.region_id
+WHERE
+    avs.rn = 1; -- 식사 후 해결
+    
+
+    
