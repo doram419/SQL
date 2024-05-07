@@ -142,9 +142,9 @@ FROM
 */
 
 SELECT
-    emp.Employee_Id,
+    emp.employee_id,
     emp.first_name,
-    DEPT.department_name,
+    dept.department_name,
     emp.salary,
     emp.hire_date
 FROM
@@ -178,7 +178,32 @@ ORDER BY
 (department_name)은?
 ---------------------------------------------------------------------
 */
-    
+SELECT
+    emp.first_name || ' ' || emp.last_name 이름,
+    dept.department_name,
+    emp.salary,
+    emp.hire_date
+FROM
+    (
+        SELECT
+            RANK() OVER(ORDER BY hire_date DESC) rw,
+            employee_id,
+            first_name,
+            last_name,
+            department_id,
+            salary,
+            hire_date
+        FROM
+            employees
+    ) emp
+JOIN 
+    departments dept
+ON 
+    emp.department_id = dept.department_id
+WHERE 
+    emp.rw = 1
+ORDER BY
+    emp.hire_date;
 
 /*
 ---------------------------------------------------------------------
@@ -254,3 +279,23 @@ WHERE
     );
 
 -- 예은 누나 코드
+
+/*
+---------------------------------------------------------------------
+문제8.
+평균 급여(salary)가 가장 높은 부서는?
+---------------------------------------------------------------------
+*/
+
+CREATE TABLE avgSalary AS(
+    SELECT
+    ROUND(AVG(salary)) avg_salary,
+    department_id
+FROM
+    employees
+GROUP BY
+    department_id
+);
+
+
+
