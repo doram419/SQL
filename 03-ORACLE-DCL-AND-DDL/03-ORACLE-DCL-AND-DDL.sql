@@ -324,7 +324,19 @@ SELECT * FROM t_test;
 COMMIT;
 SELECT * FROM t_test;
 
+SELECT
+    first_name || ' ' || last_name as full_name,
+    email as "email",
+    phone_number as ph, 
+    hire_date as hd
+FROM employees 
+WHERE 
+    LOWER(first_name) LIKE '%sam%' OR 
+    LOWER(first_name) LIKE 'sam' OR 
+    LOWER(last_name) LIKE '%sam%' OR 
+    LOWER(last_name) LIKE 'sam' ;
 
+SELECT sequence_name, min_value, max_value, increment_by, last_numberFROM user_sequences;
 
 
 
